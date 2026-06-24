@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resale — evidence konzolí a her</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+:root {
+  --bg: #0d0f14;
+  --panel: #161922;
+  --panel-2: #1d212c;
+  --line: #272c39;
+  --line-soft: #20242f;
+  --txt: #eef0f6;
+  --txt-dim: #9298ab;
+  --txt-faint: #5d6377;
+  --green: #3ddc91;
+  --green-deep: #1f9d68;
+  --amber: #f5b14c;
+  --red: #f25c6e;
+  --blue: #5aa9ff;
+  --violet: #a98bff;
+  --shadow: 0 8px 30px rgba(0,0,0,.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  font-size: 15px;
+  padding-bottom: 90px;
+  background-image:
+    radial-gradient(circle at 12% -5%, rgba(61,220,145,.07), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(169,139,255,.05), transparent 42%);
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 22px 18px; }
+
+/* ---- login ---- */
+#login-screen {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); padding: 24px;
+}
+.login-card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 20px; padding: 38px 32px; max-width: 380px; width: 100%;
+  box-shadow: var(--shadow); text-align: center;
+}
+.login-card .mark {
+  width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 18px;
+  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 800; color: #06140d;
+  box-shadow: 0 0 34px rgba(61,220,145,.35);
+}
+.login-card h1 { font-size: 21px; margin-bottom: 6px; letter-spacing: -.3px; }
+.login-card p { color: var(--txt-dim); font-size: 13.5px; margin-bottom: 24px; }
+.login-card input {
+  width: 100%; padding: 13px 15px; margin-bottom: 12px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 11px; color: var(--txt); font-size: 15px; font-family: inherit;
+}
+.login-card input:focus { outline: none; border-color: var(--green); }
+.login-card .err { color: var(--red); font-size: 13px; min-height: 18px; margin-bottom: 8px; }
+
+/* ---- header ---- */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; margin-bottom: 26px; flex-wrap: wrap;
+}
+.brand { display: flex; align-items: center; gap: 13px; }
+.brand .mark {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #06140d; font-size: 19px;
+  box-shadow: 0 0 26px rgba(61,220,145,.3);
+}
+.brand h1 { font-size: 19px; letter-spacing: -.4px; }
+.brand .sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
+.btn {
+  background: var(--green); color: #06140d; border: none;
+  padding: 11px 18px; border-radius: 11px; font-weight: 700;
+  font-size: 14px; cursor: pointer; font-family: inherit; transition: .15s;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: var(--panel-2); color: var(--txt); border: 1px solid var(--line); }
+.btn.danger { background: transparent; color: var(--red); border: 1px solid rgba(242,92,110,.4); }
+.btn.sm { padding: 8px 13px; font-size: 13px; }
+
+/* ---- AI input ---- */
+.ai-box {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 16px 16px 14px; margin-bottom: 22px;
+}
+.ai-box .lbl { font-size: 12px; color: var(--txt-faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 9px; display:flex; align-items:center; gap:7px; }
+.ai-row { display: flex; gap: 10px; }
+.ai-row input {
+  flex: 1; padding: 12px 15px; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 11px; color: var(--txt);
+  font-size: 15px; font-family: inherit;
+}
+.ai-row input:focus { outline: none; border-color: var(--green); }
+.ai-hint { font-size: 12px; color: var(--txt-faint); margin-top: 9px; }
+.ai-status { font-size: 13px; margin-top: 9px; min-height: 16px; }
+
+/* ---- stat cards ---- */
+.cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-bottom: 22px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 17px 18px; position: relative; overflow: hidden;
+}
+.card .k { font-size: 12px; color: var(--txt-dim); margin-bottom: 8px; letter-spacing: .3px; }
+.card .v { font-size: 25px; font-weight: 700; letter-spacing: -.6px; }
+.card .v.green { color: var(--green); }
+.card .v.amber { color: var(--amber); }
+.card .v.blue { color: var(--blue); }
+.card .sub2 { font-size: 12px; color: var(--txt-faint); margin-top: 4px; }
+
+/* ---- panels & charts ---- */
+.grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 22px; }
+.panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px;
+}
+.panel h2 { font-size: 15px; margin-bottom: 14px; font-weight: 600; }
+.chart-h { height: 230px; position: relative; }
+
+/* ---- topflop ---- */
+.tf { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+.tf-list { list-style: none; }
+.tf-list li {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--line-soft); font-size: 14px;
+}
+.tf-list li:last-child { border-bottom: none; }
+.tf-list .nm { color: var(--txt); }
+.tf-list .meta { font-size: 12px; color: var(--txt-faint); }
+.tf-list .val { font-weight: 700; }
+
+/* ---- filters & table ---- */
+.toolbar { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.toolbar input[type=text] {
+  flex: 1; min-width: 160px; padding: 10px 14px; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 10px; color: var(--txt); font-size: 14px; font-family: inherit;
+}
+.toolbar input:focus { outline: none; border-color: var(--green); }
+.chips { display: flex; gap: 7px; flex-wrap: wrap; }
+.chip {
+  padding: 8px 13px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 20px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .15s;
+}
+.chip.active { background: var(--green); color: #06140d; border-color: var(--green); font-weight: 600; }
+
+.tbl-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; padding: 13px 14px; font-size: 11.5px; color: var(--txt-faint);
+  text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--line); font-weight: 600;
+}
+td { padding: 13px 14px; border-bottom: 1px solid var(--line-soft); font-size: 14px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr { transition: background .12s; }
+tbody tr:hover { background: var(--panel-2); }
+.tname { font-weight: 600; }
+.tcat { font-size: 12px; color: var(--txt-faint); }
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+}
+.badge.skladem { background: rgba(90,169,255,.15); color: var(--blue); }
+.badge.vystaveno { background: rgba(245,177,76,.15); color: var(--amber); }
+.badge.prodano { background: rgba(61,220,145,.15); color: var(--green); }
+.profit-pos { color: var(--green); font-weight: 700; }
+.profit-neg { color: var(--red); font-weight: 700; }
+.days-ok { color: var(--txt-dim); }
+.days-warn { color: var(--amber); font-weight: 600; }
+.days-bad { color: var(--red); font-weight: 700; }
+.row-act { display: flex; gap: 6px; justify-content: flex-end; }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--txt-dim); cursor: pointer; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center; transition: .12s;
+}
+.icon-btn:hover { color: var(--txt); border-color: var(--line-soft); }
+.icon-btn.del:hover { color: var(--red); border-color: rgba(242,92,110,.4); }
+.empty { text-align: center; padding: 46px 20px; color: var(--txt-faint); }
+
+/* ---- modal ---- */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(5,7,11,.72); z-index: 500;
+  display: none; align-items: center; justify-content: center; padding: 18px;
+  backdrop-filter: blur(3px);
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+  padding: 24px; width: 100%; max-width: 480px; box-shadow: var(--shadow);
+  max-height: 92vh; overflow-y: auto;
+}
+.modal h3 { font-size: 18px; margin-bottom: 18px; }
+.fgrp { margin-bottom: 14px; }
+.fgrp label { display: block; font-size: 12.5px; color: var(--txt-dim); margin-bottom: 6px; }
+.fgrp input, .fgrp select {
+  width: 100%; padding: 11px 13px; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: 10px; color: var(--txt);
+  font-size: 15px; font-family: inherit;
+}
+.fgrp input:focus, .fgrp select:focus { outline: none; border-color: var(--green); }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-foot { display: flex; gap: 10px; margin-top: 20px; }
+.modal-foot .btn { flex: 1; justify-content: center; }
+.calc-note { font-size: 12.5px; color: var(--txt-faint); margin-top: 4px; }
+
+/* confirm modal */
+.confirm-modal { max-width: 380px; text-align: center; }
+.confirm-modal p { color: var(--txt-dim); margin-bottom: 20px; line-height: 1.5; }
+
+@media (max-width: 860px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  .grid-2, .tf { grid-template-columns: 1fr; }
+  .frow { grid-template-columns: 1fr; }
+  th.hide-m, td.hide-m { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="mark">R</div>
+    <h1>Resale</h1>
+    <p>Evidence konzolí, her a zisku</p>
+    <input type="email" id="login-email" placeholder="E-mail" autocomplete="username">
+    <input type="password" id="login-pass" placeholder="Heslo" autocomplete="current-password">
+    <div class="err" id="login-err"></div>
+    <button class="btn" style="width:100%;justify-content:center" onclick="doLogin()">Přihlásit se</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="wrap" id="app" style="display:none">
+  <header>
+    <div class="brand">
+      <div class="mark">R</div>
+      <div>
+        <h1>Resale</h1>
+        <div class="sub">Konzole · Hry · Telefony</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px">
+      <button class="btn" onclick="openAdd()">+ Přidat položku</button>
+      <button class="btn ghost sm" onclick="doLogout()">Odhlásit</button>
+    </div>
+  </header>
+
+  <!-- AI -->
+  <div class="ai-box">
+    <div class="lbl">⚡ Rychlé zadání textem</div>
+    <div class="ai-row">
+      <input type="text" id="ai-input" placeholder='Např.: "koupil jsem Xbox 360 za 800" nebo "prodal jsem PS4 za 3500 na Aukru"' onkeydown="if(event.key==='Enter')runAI()">
+      <button class="btn" onclick="runAI()" id="ai-btn">Zpracovat</button>
+    </div>
+    <div class="ai-status" id="ai-status"></div>
+    <div class="ai-hint">Napiš normálně co se stalo. Umí nákup, prodej i nákup balíku víc věcí najednou.</div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="cards" id="cards"></div>
+
+  <!-- CHARTS -->
+  <div class="grid-2">
+    <div class="panel">
+      <h2>Měsíční zisk</h2>
+      <div class="chart-h"><canvas id="chartMonth"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>Zisk podle platformy</h2>
+      <div class="chart-h"><canvas id="chartPlatform"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOP / FLOP -->
+  <div class="tf">
+    <div class="panel">
+      <h2>🏆 Nejlepší výdělky</h2>
+      <ul class="tf-list" id="top-list"></ul>
+    </div>
+    <div class="panel">
+      <h2>🐌 Nejdéle na skladě</h2>
+      <ul class="tf-list" id="flop-list"></ul>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Hledat název…" oninput="render()">
+    <div class="chips" id="status-chips">
+      <span class="chip active" data-s="vse" onclick="setFilter(this)">Vše</span>
+      <span class="chip" data-s="skladem" onclick="setFilter(this)">Skladem</span>
+      <span class="chip" data-s="vystaveno" onclick="setFilter(this)">Vystaveno</span>
+      <span class="chip" data-s="prodano" onclick="setFilter(this)">Prodáno</span>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Položka</th>
+          <th class="hide-m">Platforma</th>
+          <th>Nákup</th>
+          <th>Prodej</th>
+          <th class="hide-m">Náklady</th>
+          <th>Zisk</th>
+          <th class="hide-m">Dní</th>
+          <th>Stav</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div style="text-align:center;margin-top:18px">
+    <button class="btn danger sm" onclick="confirmWipe()">Smazat všechna data</button>
+  </div>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3 id="modal-title">Přidat položku</h3>
+    <input type="hidden" id="f-id">
+    <div class="fgrp">
+      <label>Název</label>
+      <input type="text" id="f-name" placeholder="např. Xbox 360 Slim 250GB">
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Kategorie</label>
+        <select id="f-cat">
+          <option value="Konzole">Konzole</option>
+          <option value="Hra">Hra</option>
+          <option value="Telefon">Telefon</option>
+          <option value="Příslušenství">Příslušenství</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>Platforma</label>
+        <select id="f-platform">
+          <option value="Aukro">Aukro</option>
+          <option value="FB Marketplace">FB Marketplace</option>
+          <option value="Bazoš">Bazoš</option>
+          <option value="Sbazar">Sbazar</option>
+          <option value="Jiné">Jiné</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Nákupní cena (Kč)</label>
+        <input type="number" id="f-buy" placeholder="0">
+      </div>
+      <div class="fgrp">
+        <label>Prodejní cena (Kč)</label>
+        <input type="number" id="f-sell" placeholder="0">
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Náklady navíc (Kč)</label>
+        <input type="number" id="f-cost" placeholder="poštovné, oprava…">
+      </div>
+      <div class="fgrp">
+        <label>Stav</label>
+        <select id="f-status">
+          <option value="skladem">Skladem</option>
+          <option value="vystaveno">Vystaveno</option>
+          <option value="prodano">Prodáno</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Datum nákupu</label>
+        <input type="date" id="f-bought">
+      </div>
+      <div class="fgrp">
+        <label>Datum prodeje</label>
+        <input type="date" id="f-sold">
+      </div>
+    </div>
+    <div class="calc-note" id="calc-note"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeModal()">Zrušit</button>
+      <button class="btn" onclick="saveItem()">Uložit</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-bg" id="confirm-bg">
+  <div class="modal confirm-modal">
+    <h3 id="confirm-title">Opravdu?</h3>
+    <p id="confirm-msg"></p>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeConfirm()">Zrušit</button>
+      <button class="btn danger" id="confirm-ok">Smazat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Firebase ----------
+var firebaseConfig = {
+  apiKey: "AIzaSyCtw2jh80pjX6DfGYnp9dooDS38h9Wmshg",
+  authDomain: "stanek-kalendar.firebaseapp.com",
+  projectId: "stanek-kalendar",
+  appId: "1:927791584501:web:ae99a0fd7499efd66d61bc"
+};
+firebase.initializeApp(firebaseConfig);
+var auth = firebase.auth();
+var db = firebase.firestore();
+
+var AUKRO_FEE = 0.09; // 9 %
+var items = [];
+var filterStatus = 'vse';
+var uid = null;
+var chartMonth = null, chartPlatform = null;
+
+// ---------- Auth ----------
+auth.onAuthStateChanged(function(user){
+  if(user){
+    uid = user.uid;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+function doLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  var err = document.getElementById('login-err');
+  err.textContent = '';
+  auth.signInWithEmailAndPassword(email, pass).catch(function(e){
+    if(e.code === 'auth/user-not-found'){
+      auth.createUserWithEmailAndPassword(email, pass).catch(function(e2){
+        err.textContent = chyba(e2.code);
+      });
+    } else {
+      err.textContent = chyba(e.code);
+    }
+  });
+}
+function chyba(code){
+  if(code==='auth/wrong-password') return 'Špatné heslo.';
+  if(code==='auth/invalid-email') return 'Neplatný e-mail.';
+  if(code==='auth/weak-password') return 'Heslo musí mít aspoň 6 znaků.';
+  return 'Chyba přihlášení: ' + code;
+}
+function doLogout(){ auth.signOut(); }
+
+// ---------- Data ----------
+function docRef(){ return db.collection('resale').doc(uid); }
+function loadData(){
+  docRef().onSnapshot(function(snap){
+    var d = snap.data();
+    items = (d && d.items) ? d.items : [];
+    render();
+  }, function(e){ console.error('load err', e); });
+}
+function save(){
+  docRef().set({ items: items }, { merge: true }).catch(function(e){ console.error('save err', e); });
+}
+
+// ---------- Calc ----------
+function platformFee(it){
+  if(it.platform === 'Aukro' && it.sell) return Math.round(it.sell * AUKRO_FEE);
+  return 0;
+}
+function profit(it){
+  if(it.status !== 'prodano' || !it.sell) return null;
+  return it.sell - (it.buy||0) - (it.cost||0) - platformFee(it);
+}
+function daysInStock(it){
+  if(!it.bought) return null;
+  var start = new Date(it.bought);
+  var end = (it.status==='prodano' && it.sold) ? new Date(it.sold) : new Date();
+  return Math.max(0, Math.round((end - start) / 86400000));
+}
+function fmt(n){
+  if(n===null||n===undefined||isNaN(n)) return '—';
+  return new Intl.NumberFormat('cs-CZ').format(Math.round(n)) + ' Kč';
+}
+
+// ---------- Render ----------
+function setFilter(el){
+  document.querySelectorAll('#status-chips .chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  filterStatus = el.getAttribute('data-s');
+  render();
+}
+function render(){
+  renderCards();
+  renderTopFlop();
+  renderTable();
+  renderCharts();
+}
+function renderCards(){
+  var sold = items.filter(function(i){ return i.status==='prodano'; });
+  var totalProfit = sold.reduce(function(s,i){ return s + (profit(i)||0); }, 0);
+  var stockItems = items.filter(function(i){ return i.status!=='prodano'; });
+  var tiedUp = stockItems.reduce(function(s,i){ return s + (i.buy||0) + (i.cost||0); }, 0);
+  // marže %
+  var revenue = sold.reduce(function(s,i){ return s + (i.sell||0); }, 0);
+  var margin = revenue ? Math.round(totalProfit / revenue * 100) : 0;
+  var html = '';
+  html += card('Celkový čistý zisk', fmt(totalProfit), 'green', sold.length + ' prodaných');
+  html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' položek');
+  html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů');
+  html += card('Celkem položek', items.length, '', stockItems.length + ' skladem');
+  document.getElementById('cards').innerHTML = html;
+}
+function card(k,v,cls,sub){
+  return '<div class="card"><div class="k">'+k+'</div><div class="v '+(cls||'')+'">'+v+'</div><div class="sub2">'+sub+'</div></div>';
+}
+function renderTopFlop(){
+  var sold = items.filter(function(i){ return i.status==='prodano' && profit(i)!==null; });
+  sold.sort(function(a,b){ return profit(b) - profit(a); });
+  var top = sold.slice(0,5);
+  var tl = top.map(function(i){
+    var p = profit(i);
+    var roi = i.buy ? Math.round(p / i.buy * 100) : 0;
+    return '<li><span class="nm">'+esc(i.name)+'<div class="meta">ROI '+roi+' %</div></span><span class="val profit-pos">'+fmt(p)+'</span></li>';
+  }).join('');
+  document.getElementById('top-list').innerHTML = tl || '<li class="meta">Zatím nic prodaného</li>';
+
+  var stock = items.filter(function(i){ return i.status!=='prodano' && daysInStock(i)!==null; });
+  stock.sort(function(a,b){ return daysInStock(b) - daysInStock(a); });
+  var flop = stock.slice(0,5);
+  var fl = flop.map(function(i){
+    var d = daysInStock(i);
+    return '<li><span class="nm">'+esc(i.name)+'<div class="meta">'+fmt(i.buy)+' v zásobě</div></span><span class="val '+daysCls(d)+'">'+d+' dní</span></li>';
+  }).join('');
+  document.getElementById('flop-list').innerHTML = fl || '<li class="meta">Žádné položky skladem</li>';
+}
+function daysCls(d){ if(d>=60) return 'days-bad'; if(d>=30) return 'days-warn'; return 'days-ok'; }
+function renderTable(){
+  var q = document.getElementById('search').value.toLowerCase();
+  var list = items.filter(function(i){
+    if(filterStatus!=='vse' && i.status!==filterStatus) return false;
+    if(q && i.name.toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+  list.sort(function(a,b){ return (b.bought||'').localeCompare(a.bought||''); });
+  if(list.length===0){
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="9"><div class="empty">Žádné položky. Přidej první přes tlačítko nahoře nebo rychlým zadáním.</div></td></tr>';
+    return;
+  }
+  var html = list.map(function(i){
+    var p = profit(i);
+    var pCell = p===null ? '<span class="days-ok">—</span>' : '<span class="'+(p>=0?'profit-pos':'profit-neg')+'">'+fmt(p)+'</span>';
+    var d = daysInStock(i);
+    var dCell = d===null ? '—' : '<span class="'+daysCls(d)+'">'+d+'</span>';
+    var statusLbl = {skladem:'Skladem', vystaveno:'Vystaveno', prodano:'Prodáno'}[i.status];
+    return '<tr>'+
+      '<td><div class="tname">'+esc(i.name)+'</div><div class="tcat">'+esc(i.cat||'')+'</div></td>'+
+      '<td class="hide-m">'+esc(i.platform||'—')+'</td>'+
+      '<td>'+fmt(i.buy)+'</td>'+
+      '<td>'+(i.sell?fmt(i.sell):'—')+'</td>'+
+      '<td class="hide-m">'+(i.cost?fmt(i.cost):'—')+'</td>'+
+      '<td>'+pCell+'</td>'+
+      '<td class="hide-m">'+dCell+'</td>'+
+      '<td><span class="badge '+i.status+'">'+statusLbl+'</span></td>'+
+      '<td><div class="row-act">'+
+        '<button class="icon-btn" onclick="openEdit(\''+i.id+'\')">✎</button>'+
+        '<button class="icon-btn del" onclick="confirmDel(\''+i.id+'\')">🗑</button>'+
+      '</div></td>'+
+    '</tr>';
+  }).join('');
+  document.getElementById('tbody').innerHTML = html;
+}
+function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+// ---------- Charts ----------
+function renderCharts(){
+  var sold = items.filter(function(i){ return i.status==='prodano' && i.sold && profit(i)!==null; });
+  // months
+  var byMonth = {};
+  sold.forEach(function(i){
+    var m = i.sold.slice(0,7);
+    byMonth[m] = (byMonth[m]||0) + profit(i);
+  });
+  var months = Object.keys(byMonth).sort();
+  var mLabels = months.map(function(m){
+    var p = m.split('-'); return p[1]+'/'+p[0].slice(2);
+  });
+  var mData = months.map(function(m){ return byMonth[m]; });
+  if(chartMonth) chartMonth.destroy();
+  chartMonth = new Chart(document.getElementById('chartMonth'), {
+    type: 'bar',
+    data: { labels: mLabels, datasets: [{ data: mData, backgroundColor: '#3ddc91', borderRadius: 6 }] },
+    options: chartOpts(true)
+  });
+  // platform
+  var byPlat = {};
+  sold.forEach(function(i){ byPlat[i.platform||'Jiné'] = (byPlat[i.platform||'Jiné']||0) + profit(i); });
+  var pLabels = Object.keys(byPlat);
+  var pData = pLabels.map(function(k){ return byPlat[k]; });
+  if(chartPlatform) chartPlatform.destroy();
+  chartPlatform = new Chart(document.getElementById('chartPlatform'), {
+    type: 'doughnut',
+    data: { labels: pLabels, datasets: [{ data: pData, backgroundColor: ['#3ddc91','#5aa9ff','#f5b14c','#a98bff','#f25c6e'], borderColor: '#161922', borderWidth: 2 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#9298ab', padding:14, font:{ size:12 } } } } }
+  });
+}
+function chartOpts(money){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(c){ return fmt(c.parsed.y); } } } },
+    scales:{
+      x:{ grid:{ display:false }, ticks:{ color:'#5d6377', font:{ size:11 } } },
+      y:{ grid:{ color:'#20242f' }, ticks:{ color:'#5d6377', font:{ size:11 }, callback:function(v){ return v/1000+'k'; } } }
+    }
+  };
+}
+
+// ---------- Modal ----------
+function openAdd(){
+  document.getElementById('modal-title').textContent = 'Přidat položku';
+  document.getElementById('f-id').value = '';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-cat').value = 'Konzole';
+  document.getElementById('f-platform').value = 'Aukro';
+  document.getElementById('f-buy').value = '';
+  document.getElementById('f-sell').value = '';
+  document.getElementById('f-cost').value = '';
+  document.getElementById('f-status').value = 'skladem';
+  document.getElementById('f-bought').value = new Date().toISOString().slice(0,10);
+  document.getElementById('f-sold').value = '';
+  updateCalcNote();
+  document.getElementById('modal-bg').classList.add('show');
+}
+function openEdit(id){
+  var it = items.find(function(i){ return i.id===id; });
+  if(!it) return;
+  document.getElementById('modal-title').textContent = 'Upravit položku';
+  document.getElementById('f-id').value = it.id;
+  document.getElementById('f-name').value = it.name;
+  document.getElementById('f-cat').value = it.cat||'Konzole';
+  document.getElementById('f-platform').value = it.platform||'Aukro';
+  document.getElementById('f-buy').value = it.buy||'';
+  document.getElementById('f-sell').value = it.sell||'';
+  document.getElementById('f-cost').value = it.cost||'';
+  document.getElementById('f-status').value = it.status;
+  document.getElementById('f-bought').value = it.bought||'';
+  document.getElementById('f-sold').value = it.sold||'';
+  updateCalcNote();
+  document.getElementById('modal-bg').classList.add('show');
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); }
+['f-buy','f-sell','f-cost','f-platform'].forEach(function(id){
+  document.addEventListener('input', function(e){ if(e.target.id===id) updateCalcNote(); });
+});
+function updateCalcNote(){
+  var buy = +document.getElementById('f-buy').value||0;
+  var sell = +document.getElementById('f-sell').value||0;
+  var cost = +document.getElementById('f-cost').value||0;
+  var plat = document.getElementById('f-platform').value;
+  var fee = (plat==='Aukro' && sell) ? Math.round(sell*AUKRO_FEE) : 0;
+  if(!sell){ document.getElementById('calc-note').textContent=''; return; }
+  var p = sell - buy - cost - fee;
+  document.getElementById('calc-note').innerHTML = 'Čistý zisk: <b style="color:'+(p>=0?'var(--green)':'var(--red)')+'">'+fmt(p)+'</b>'+(fee?' (po odečtení poplatku Aukro '+fmt(fee)+')':'');
+}
+function saveItem(){
+  var name = document.getElementById('f-name').value.trim();
+  if(!name){ alert('Zadej název.'); return; }
+  var id = document.getElementById('f-id').value;
+  var obj = {
+    id: id || ('it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)),
+    name: name,
+    cat: document.getElementById('f-cat').value,
+    platform: document.getElementById('f-platform').value,
+    buy: +document.getElementById('f-buy').value||0,
+    sell: +document.getElementById('f-sell').value||0,
+    cost: +document.getElementById('f-cost').value||0,
+    status: document.getElementById('f-status').value,
+    bought: document.getElementById('f-bought').value||'',
+    sold: document.getElementById('f-sold').value||''
+  };
+  if(obj.status==='prodano' && !obj.sold) obj.sold = new Date().toISOString().slice(0,10);
+  if(id){
+    var idx = items.findIndex(function(i){ return i.id===id; });
+    if(idx>=0) items[idx] = obj;
+  } else {
+    items.push(obj);
+  }
+  save(); render(); closeModal();
+}
+
+// ---------- Confirm ----------
+var confirmAction = null;
+function showConfirm(title, msg, fn){
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  confirmAction = fn;
+  document.getElementById('confirm-bg').classList.add('show');
+}
+function closeConfirm(){ document.getElementById('confirm-bg').classList.remove('show'); confirmAction=null; }
+document.getElementById('confirm-ok').onclick = function(){ if(confirmAction) confirmAction(); closeConfirm(); };
+function confirmDel(id){
+  var it = items.find(function(i){ return i.id===id; });
+  showConfirm('Smazat položku?', 'Opravdu smazat „'+(it?it.name:'')+'“?', function(){
+    items = items.filter(function(i){ return i.id!==id; });
+    save(); render();
+  });
+}
+function confirmWipe(){
+  showConfirm('Smazat vše?', 'Tímto smažeš všech '+items.length+' položek. Nelze vrátit zpět.', function(){
+    items = []; save(); render();
+  });
+}
+
+// ---------- AI ----------
+function runAI(){
+  var txt = document.getElementById('ai-input').value.trim();
+  if(!txt) return;
+  var st = document.getElementById('ai-status');
+  var btn = document.getElementById('ai-btn');
+  st.style.color = 'var(--txt-dim)';
+  st.textContent = 'Zpracovávám…';
+  btn.disabled = true;
+  var sys = 'Jsi parser pro evidenci přeprodeje konzolí, her a telefonů. Z textu uživatele v češtině vrať POUZE validní JSON, žádný jiný text, žádné markdown. '+
+    'Pokud uživatel popisuje NÁKUP, vrať: {"action":"buy","items":[{"name":"...","cat":"Konzole|Hra|Telefon|Příslušenství","buy":CISLO,"platform":"Aukro|FB Marketplace|Bazoš|Sbazar|Jiné"}]}. '+
+    'Pokud popisuje PRODEJ, vrať: {"action":"sell","name":"...","sell":CISLO,"platform":"..."}. '+
+    'Pokud je to nákup balíku víc věcí za jednu cenu, rozděl cenu mezi položky podle odhadnuté tržní hodnoty a vrať víc položek v poli items. '+
+    'Když platforma není zmíněna, použij "Aukro" u prodeje a "Jiné" u nákupu. Ceny jsou v Kč jako čísla bez měny.';
+  fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:1000,
+      system: sys,
+      messages:[{role:'user', content: txt}]
+    })
+  }).then(function(r){ return r.json(); }).then(function(data){
+    var raw = (data.content||[]).filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('');
+    raw = raw.replace(/```json|```/g,'').trim();
+    var parsed = JSON.parse(raw);
+    applyAI(parsed);
+    document.getElementById('ai-input').value = '';
+    btn.disabled = false;
+  }).catch(function(e){
+    st.style.color = 'var(--red)';
+    st.textContent = 'Nepodařilo se zpracovat. Zkus to říct jinak.';
+    btn.disabled = false;
+    console.error(e);
+  });
+}
+function applyAI(p){
+  var st = document.getElementById('ai-status');
+  st.style.color = 'var(--green)';
+  var today = new Date().toISOString().slice(0,10);
+  if(p.action==='buy' && p.items){
+    p.items.forEach(function(x){
+      items.push({
+        id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        name:x.name, cat:x.cat||'Konzole', platform:x.platform||'Jiné',
+        buy:+x.buy||0, sell:0, cost:0, status:'skladem', bought:today, sold:''
+      });
+    });
+    st.textContent = '✓ Přidáno do skladu: ' + p.items.map(function(x){return x.name;}).join(', ');
+    save(); render();
+  } else if(p.action==='sell'){
+    // najdi existující skladovou položku se stejným/podobným názvem
+    var match = items.filter(function(i){ return i.status!=='prodano'; })
+      .find(function(i){ return i.name.toLowerCase().indexOf((p.name||'').toLowerCase())>=0 || (p.name||'').toLowerCase().indexOf(i.name.toLowerCase())>=0; });
+    if(match){
+      match.sell = +p.sell||0;
+      match.status = 'prodano';
+      match.sold = today;
+      if(p.platform) match.platform = p.platform;
+      st.textContent = '✓ Označeno jako prodáno: '+match.name+' za '+fmt(match.sell);
+    } else {
+      items.push({
+        id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        name:p.name, cat:'Konzole', platform:p.platform||'Aukro',
+        buy:0, sell:+p.sell||0, cost:0, status:'prodano', bought:'', sold:today
+      });
+      st.textContent = '✓ Přidán prodej: '+p.name+' za '+fmt(+p.sell||0)+' (nákup neznámý, doplň ho)';
+    }
+    save(); render();
+  } else {
+    st.style.color = 'var(--amber)';
+    st.textContent = 'Nerozumím – zkus napsat jasně „koupil jsem…“ nebo „prodal jsem…“.';
+  }
+}
+</script>
+</body>
+</html>

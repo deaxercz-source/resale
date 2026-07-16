@@ -266,6 +266,40 @@ tbody tr:hover { background: var(--panel-2); }
 .modal-foot .btn { flex: 1; justify-content: center; }
 .calc-note { font-size: 12.5px; color: var(--txt-faint); margin-top: 4px; }
 
+/* ---- loty ---- */
+.lot-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 15px 16px; margin-bottom: 12px; }
+.lot-card:last-child { margin-bottom: 0; }
+.lot-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.lot-name { font-size: 15px; font-weight: 700; }
+.lot-meta { font-size: 12px; color: var(--txt-faint); margin-top: 3px; }
+.lot-prof { text-align: right; }
+.lot-prof .lp-v { font-size: 19px; font-weight: 700; letter-spacing: -.4px; }
+.lot-prof .lp-lbl { font-size: 11px; color: var(--txt-faint); }
+.lot-bar-wrap { height: 8px; background: var(--line); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+.lot-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-deep)); border-radius: 6px; transition: width .3s; }
+.lot-stats { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--txt-dim); margin-bottom: 4px; }
+.lot-stats b { color: var(--txt); }
+.lot-recouped { color: var(--green); font-weight: 700; font-size: 12.5px; }
+.lot-actions { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
+.lot-items { margin-top: 10px; border-top: 1px solid var(--line-soft); padding-top: 10px; display: none; }
+.lot-items.open { display: block; }
+.lot-item-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 13.5px; border-bottom: 1px solid var(--line-soft); gap: 8px; }
+.lot-item-row:last-child { border-bottom: none; }
+.lot-item-row .lir-name { flex: 1; }
+.lot-item-row .lir-status { font-size: 11px; }
+
+/* ---- lot builder rows ---- */
+.lb-head { display: grid; grid-template-columns: 1fr 90px 90px 30px; gap: 8px; font-size: 11px; color: var(--txt-faint); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; padding: 0 2px; }
+.lb-row { display: grid; grid-template-columns: 1fr 90px 90px 30px; gap: 8px; margin-bottom: 8px; align-items: center; }
+.lb-row input, .lb-row select { padding: 9px 10px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; color: var(--txt); font-size: 14px; font-family: inherit; width: 100%; }
+.lb-row input:focus, .lb-row select:focus { outline: none; border-color: var(--green); }
+.lb-alloc { font-size: 12px; color: var(--green); text-align: center; }
+.lb-del { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel-2); color: var(--txt-faint); cursor: pointer; font-size: 13px; }
+.lb-del:hover { color: var(--red); }
+.lb-summary { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; margin-top: 10px; font-size: 13px; color: var(--txt-dim); }
+.lb-summary b { color: var(--txt); }
+.lb-warn { color: var(--amber); }
+
 .confirm-modal { max-width: 380px; text-align: center; }
 .confirm-modal p { color: var(--txt-dim); margin-bottom: 20px; line-height: 1.5; }
 
@@ -305,6 +339,7 @@ tbody tr:hover { background: var(--panel-2); }
     </div>
     <div style="display:flex;gap:9px;flex-wrap:wrap">
       <button class="btn" onclick="openAdd()">+ Přidat položku</button>
+      <button class="btn ghost sm" onclick="openLot()">📦 Přidat lot</button>
       <button class="btn ghost sm" onclick="exportCSV()">↓ Export</button>
       <button class="btn ghost sm" onclick="doLogout()">Odhlásit</button>
     </div>
@@ -381,6 +416,28 @@ tbody tr:hover { background: var(--panel-2); }
     <div class="panel">
       <h2>🐌 Nejdéle na skladě</h2>
       <ul class="tf-list" id="flop-list"></ul>
+    </div>
+  </div>
+
+  <!-- LOTY -->
+  <div class="panel" id="lots-panel" style="margin-bottom:22px;display:none">
+    <div class="year-head">
+      <h2 style="margin:0">📦 Nákupní loty</h2>
+      <span style="font-size:12px;color:var(--txt-faint)" id="lots-sub"></span>
+    </div>
+    <div id="lots-list"></div>
+  </div>
+
+  <!-- DUPLICITY -->
+  <div class="panel" id="dupes-panel" style="margin-bottom:22px;display:none">
+    <h2>🔁 Mám víckrát</h2>
+    <div class="tbl-wrap" style="border:none">
+      <table>
+        <thead>
+          <tr><th>Hra / položka</th><th>Skladem</th><th>Prodáno</th><th class="hide-m">⌀ nákup</th><th>⌀ prodej</th></tr>
+        </thead>
+        <tbody id="dupes-body"></tbody>
+      </table>
     </div>
   </div>
 
@@ -521,6 +578,54 @@ tbody tr:hover { background: var(--panel-2); }
   </div>
 </div>
 
+<!-- LOT MODAL -->
+<div class="modal-bg" id="lot-bg">
+  <div class="modal" style="max-width:640px">
+    <h3 id="lot-title">Nový nákupní lot</h3>
+    <input type="hidden" id="lot-id">
+    <div class="frow">
+      <div class="fgrp">
+        <label>Název lotu</label>
+        <input type="text" id="lot-name" placeholder="např. Xbox 360 balík z Bazoše">
+      </div>
+      <div class="fgrp">
+        <label>Celková nákupní cena (Kč)</label>
+        <input type="number" id="lot-price" placeholder="0" oninput="recalcLot()">
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Odkud (platforma)</label>
+        <select id="lot-source">
+          <option value="Bazoš">Bazoš</option>
+          <option value="FB Marketplace">FB Marketplace</option>
+          <option value="Sbazar">Sbazar</option>
+          <option value="Aukro">Aukro</option>
+          <option value="Jiné">Jiné</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>Datum nákupu</label>
+        <input type="date" id="lot-date">
+      </div>
+    </div>
+
+    <label style="font-size:12.5px;color:var(--txt-dim);display:block;margin:6px 0 8px">Kusy v lotu — u každého zadej odhad tržní hodnoty, nákup se rozpočítá podle poměru</label>
+    <div class="lb-head">
+      <span>Název kusu</span><span>Kategorie</span><span>Odhad (Kč)</span><span></span>
+    </div>
+    <div id="lb-rows"></div>
+    <button class="btn ghost sm" onclick="addLotRow()" style="margin-top:4px">+ Přidat kus</button>
+
+    <div class="lb-summary" id="lb-summary"></div>
+
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeLot()">Zrušit</button>
+      <button class="btn" onclick="saveLot()">Uložit lot</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="modal-bg" id="confirm-bg">
   <div class="modal confirm-modal">
@@ -550,6 +655,7 @@ var FEES = { 'Aukro': 0.07, 'FB Marketplace': 0, 'Bazoš': 0, 'Sbazar': 0, 'Jin�
 var STOCK_WARN = 30; // dní
 
 var items = [];
+var lots = [];
 var filterStatus = 'vse';
 var period = 'vse';
 var uid = null;
@@ -593,12 +699,13 @@ function loadData(){
   docRef().onSnapshot(function(snap){
     var d = snap.data();
     items = (d && d.items) ? d.items : [];
+    lots = (d && d.lots) ? d.lots : [];
     initYearSelect();
     render();
   }, function(e){ console.error('load err', e); });
 }
 function save(){
-  docRef().set({ items: items }, { merge: true }).catch(function(e){ console.error('save err', e); });
+  docRef().set({ items: items, lots: lots }, { merge: true }).catch(function(e){ console.error('save err', e); });
 }
 
 // ---------- Calc ----------
@@ -652,6 +759,8 @@ function setFilter(el){
 function render(){
   renderCards();
   renderAlert();
+  renderLots();
+  renderDupes();
   renderTopFlop();
   renderTable();
   renderCharts();
@@ -858,6 +967,7 @@ function getMP(){
 }
 function toggleMP(el){ el.classList.toggle('on'); }
 function openAdd(){
+  pendingLotId=null;
   document.getElementById('modal-title').textContent='Přidat položku';
   document.getElementById('f-id').value='';
   document.getElementById('f-name').value='';
@@ -933,17 +1043,218 @@ function saveItem(){
     note:document.getElementById('f-note').value.trim()
   };
   if(obj.status==='prodano' && !obj.sold) obj.sold=new Date().toISOString().slice(0,10);
-  if(id){ var idx=items.findIndex(function(i){return i.id===id;}); if(idx>=0) items[idx]=obj; }
-  else { items.push(obj); }
+  if(id){
+    var idx=items.findIndex(function(i){return i.id===id;});
+    if(idx>=0){ obj.lotId=items[idx].lotId||null; obj.est=items[idx].est; items[idx]=obj; }
+  } else {
+    if(pendingLotId) obj.lotId=pendingLotId;
+    items.push(obj);
+  }
+  pendingLotId=null;
   save(); initYearSelect(); render(); closeModal();
 }
 
+// ---------- LOTY ----------
+// kusy patřící do lotu
+function lotItems(lotId){ return items.filter(function(i){ return i.lotId===lotId; }); }
+// přehled lotu
+function lotSummary(lot){
+  var its = lotItems(lot.id);
+  var sold = its.filter(function(i){ return i.status==='prodano'; });
+  var revenue = sold.reduce(function(s,i){ return s+(i.sell||0); },0);
+  var extraCost = its.reduce(function(s,i){ return s+(i.cost||0); },0);
+  var fees = sold.reduce(function(s,i){ return s+platformFee(i); },0);
+  var profit = revenue - (lot.price||0) - extraCost - fees;
+  var recouped = revenue >= (lot.price||0) + extraCost + fees;
+  return {
+    count: its.length, soldCount: sold.length,
+    revenue: revenue, profit: profit, recouped: recouped,
+    pct: its.length ? Math.round(sold.length/its.length*100) : 0
+  };
+}
+function renderLots(){
+  var panel = document.getElementById('lots-panel');
+  if(!lots.length){ panel.style.display='none'; return; }
+  panel.style.display='block';
+  document.getElementById('lots-sub').textContent = lots.length + ' lotů';
+  lots.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  document.getElementById('lots-list').innerHTML = lots.map(function(lot){
+    var s = lotSummary(lot);
+    var pColor = s.profit>=0 ? 'var(--green)' : 'var(--red)';
+    var its = lotItems(lot.id);
+    var rows = its.map(function(i){
+      var stLbl = {skladem:'skladem',vystaveno:'vystaveno',prodano:'prodáno'}[i.status];
+      var stCol = i.status==='prodano'?'var(--green)':(i.status==='vystaveno'?'var(--amber)':'var(--blue)');
+      var buyLine = 'nákup '+fmt(i.buy);
+      var sellLine = i.status==='prodano' ? ' → prodej '+fmt(i.sell) : '';
+      return '<div class="lot-item-row"><span class="lir-name">'+esc(i.name)+' <span style="color:var(--txt-faint);font-size:12px">('+buyLine+sellLine+')</span></span><span class="lir-status" style="color:'+stCol+'">'+stLbl+'</span></div>';
+    }).join('') || '<div style="font-size:13px;color:var(--txt-faint)">Žádné kusy — přidej je přes „Přidat položku" a přiřaď k lotu, nebo uprav lot.</div>';
+    return '<div class="lot-card">'+
+      '<div class="lot-top">'+
+        '<div><div class="lot-name">'+esc(lot.name)+'</div>'+
+        '<div class="lot-meta">Nákup '+fmt(lot.price)+' · '+esc(lot.source||'')+' · '+(lot.date||'')+'</div></div>'+
+        '<div class="lot-prof"><div class="lp-v" style="color:'+pColor+'">'+fmt(s.profit)+'</div><div class="lp-lbl">'+(s.recouped?'čistý zisk':'zatím')+'</div></div>'+
+      '</div>'+
+      '<div class="lot-bar-wrap"><div class="lot-bar" style="width:'+s.pct+'%"></div></div>'+
+      '<div class="lot-stats"><span>Rozprodáno <b>'+s.pct+'%</b></span><span><b>'+s.soldCount+'</b>/'+s.count+' kusů</span><span>Zpět z prodejů <b>'+fmt(s.revenue)+'</b></span>'+
+        (s.recouped?'<span class="lot-recouped">✓ Náklad pokryt</span>':'<span>Zbývá pokrýt <b>'+fmt(Math.max(0,(lot.price||0)-s.revenue))+'</b></span>')+'</div>'+
+      '<div class="lot-actions">'+
+        '<button class="btn ghost sm" onclick="toggleLotItems(\''+lot.id+'\')">Zobrazit kusy ('+its.length+')</button>'+
+        '<button class="btn ghost sm" onclick="openAddToLot(\''+lot.id+'\')">+ Kus do lotu</button>'+
+        '<button class="btn ghost sm" onclick="openLotEdit(\''+lot.id+'\')">✎ Upravit lot</button>'+
+        '<button class="btn danger sm" onclick="confirmDelLot(\''+lot.id+'\')">Smazat</button>'+
+      '</div>'+
+      '<div class="lot-items" id="li-'+lot.id+'">'+rows+'</div>'+
+    '</div>';
+  }).join('');
+}
+function toggleLotItems(id){ document.getElementById('li-'+id).classList.toggle('open'); }
+
+// ---------- Duplicity ----------
+function renderDupes(){
+  var groups = {};
+  items.forEach(function(i){
+    var key = i.name.trim().toLowerCase();
+    if(!groups[key]) groups[key] = { name:i.name, all:[], stock:0, sold:0, buySum:0, buyCnt:0, sellSum:0, sellCnt:0 };
+    var g = groups[key];
+    g.all.push(i);
+    if(i.status==='prodano'){ g.sold++; if(i.sell){ g.sellSum+=i.sell; g.sellCnt++; } }
+    else g.stock++;
+    if(i.buy){ g.buySum+=i.buy; g.buyCnt++; }
+  });
+  var dupes = Object.keys(groups).map(function(k){ return groups[k]; }).filter(function(g){ return g.all.length>=2; });
+  var panel = document.getElementById('dupes-panel');
+  if(!dupes.length){ panel.style.display='none'; return; }
+  panel.style.display='block';
+  dupes.sort(function(a,b){ return b.all.length-a.all.length; });
+  document.getElementById('dupes-body').innerHTML = dupes.map(function(g){
+    var avgBuy = g.buyCnt ? g.buySum/g.buyCnt : 0;
+    var avgSell = g.sellCnt ? g.sellSum/g.sellCnt : 0;
+    return '<tr><td class="tname">'+esc(g.name)+' <span style="color:var(--txt-faint);font-weight:400;font-size:12px">('+g.all.length+'×)</span></td>'+
+      '<td><span class="badge skladem">'+g.stock+' ks</span></td>'+
+      '<td><span class="badge prodano">'+g.sold+' ks</span></td>'+
+      '<td class="hide-m">'+(avgBuy?fmt(avgBuy):'—')+'</td>'+
+      '<td>'+(avgSell?fmt(avgSell):'—')+'</td></tr>';
+  }).join('');
+}
+
+// ---------- Lot builder ----------
+var lotRows = [];
+function openLot(){
+  document.getElementById('lot-title').textContent='Nový nákupní lot';
+  document.getElementById('lot-id').value='';
+  document.getElementById('lot-name').value='';
+  document.getElementById('lot-price').value='';
+  document.getElementById('lot-source').value='Bazoš';
+  document.getElementById('lot-date').value=new Date().toISOString().slice(0,10);
+  lotRows=[ blankRow(), blankRow() ];
+  drawLotRows();
+  document.getElementById('lot-bg').classList.add('show');
+}
+function openLotEdit(id){
+  var lot=lots.find(function(l){return l.id===id;});
+  if(!lot) return;
+  document.getElementById('lot-title').textContent='Upravit lot';
+  document.getElementById('lot-id').value=lot.id;
+  document.getElementById('lot-name').value=lot.name;
+  document.getElementById('lot-price').value=lot.price||'';
+  document.getElementById('lot-source').value=lot.source||'Bazoš';
+  document.getElementById('lot-date').value=lot.date||'';
+  // existující kusy do řádků (jen ty skladem/vystavené, aby šel upravit odhad; prodané needitujeme přes builder)
+  var its=lotItems(lot.id);
+  lotRows = its.map(function(i){ return { itemId:i.id, name:i.name, cat:i.cat||'Konzole', est:i.est||i.buy||0, locked:(i.status==='prodano') }; });
+  if(!lotRows.length) lotRows=[ blankRow() ];
+  drawLotRows();
+  document.getElementById('lot-bg').classList.add('show');
+}
+function blankRow(){ return { itemId:null, name:'', cat:'Konzole', est:'', locked:false }; }
+function addLotRow(){ lotRows.push(blankRow()); drawLotRows(); }
+function delLotRow(idx){ lotRows.splice(idx,1); if(!lotRows.length) lotRows=[blankRow()]; drawLotRows(); }
+function drawLotRows(){
+  var cats=['Konzole','Hra','Telefon','Příslušenství'];
+  document.getElementById('lb-rows').innerHTML = lotRows.map(function(r,idx){
+    var opts=cats.map(function(c){ return '<option value="'+c+'"'+(r.cat===c?' selected':'')+'>'+c+'</option>'; }).join('');
+    var lock = r.locked ? ' disabled title="prodaný kus, uprav ho v tabulce"' : '';
+    return '<div class="lb-row">'+
+      '<input type="text" placeholder="název kusu" value="'+esc(r.name)+'" oninput="lotRows['+idx+'].name=this.value"'+lock+'>'+
+      '<select oninput="lotRows['+idx+'].cat=this.value"'+lock+'>'+opts+'</select>'+
+      '<input type="number" placeholder="odhad" value="'+(r.est!==''?r.est:'')+'" oninput="lotRows['+idx+'].est=this.value;recalcLot()"'+lock+'>'+
+      '<button class="lb-del" onclick="delLotRow('+idx+')"'+(r.locked?' disabled':'')+'>✕</button>'+
+    '</div>';
+  }).join('');
+  recalcLot();
+}
+function recalcLot(){
+  var price=+document.getElementById('lot-price').value||0;
+  var totalEst=lotRows.reduce(function(s,r){ return s+(+r.est||0); },0);
+  var sum=document.getElementById('lb-summary');
+  var filled=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; }).length;
+  if(!price){ sum.innerHTML='<span class="lb-warn">Zadej celkovou cenu lotu nahoře.</span>'; return; }
+  if(!totalEst){ sum.innerHTML='<span class="lb-warn">Zadej odhad hodnoty aspoň u jednoho kusu.</span>'; return; }
+  var lines=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; }).map(function(r){
+    var alloc=Math.round(price * (+r.est) / totalEst);
+    return esc(r.name)+' → <b>'+fmt(alloc)+'</b>';
+  }).join(' · ');
+  sum.innerHTML='Rozpočet nákupu ('+fmt(price)+' na '+filled+' kusů podle odhadu):<br>'+lines;
+}
+function saveLot(){
+  var name=document.getElementById('lot-name').value.trim();
+  var price=+document.getElementById('lot-price').value||0;
+  if(!name){ alert('Zadej název lotu.'); return; }
+  if(!price){ alert('Zadej celkovou cenu lotu.'); return; }
+  var valid=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; });
+  if(!valid.length){ alert('Přidej aspoň jeden kus s odhadem hodnoty.'); return; }
+  var totalEst=valid.reduce(function(s,r){ return s+(+r.est); },0);
+  var source=document.getElementById('lot-source').value;
+  var date=document.getElementById('lot-date').value;
+  var lotId=document.getElementById('lot-id').value || ('lot_'+Date.now()+'_'+Math.random().toString(36).slice(2,6));
+
+  var lot={ id:lotId, name:name, price:price, source:source, date:date };
+  var existingIdx=lots.findIndex(function(l){ return l.id===lotId; });
+  if(existingIdx>=0) lots[existingIdx]=lot; else lots.push(lot);
+
+  // vytvoř / uprav kusy
+  valid.forEach(function(r){
+    var alloc=Math.round(price * (+r.est) / totalEst);
+    if(r.itemId){
+      var it=items.find(function(i){ return i.id===r.itemId; });
+      if(it){ it.name=r.name; it.cat=r.cat; it.est=+r.est; if(it.status!=='prodano'){ it.buy=alloc; } }
+    } else {
+      items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        name:r.name, cat:r.cat, cond:'Použité', listed:[], soldOn:'',
+        buy:alloc, sell:0, cost:0, status:'skladem', url:'',
+        bought:date||new Date().toISOString().slice(0,10), sold:'', note:'',
+        lotId:lotId, est:+r.est });
+    }
+  });
+  save(); initYearSelect(); render(); closeLot();
+}
+function closeLot(){ document.getElementById('lot-bg').classList.remove('show'); }
+function confirmDelLot(id){
+  var lot=lots.find(function(l){return l.id===id;});
+  var cnt=lotItems(id).length;
+  showConfirm('Smazat lot?','Smazat lot „'+(lot?lot.name:'')+'“ i s '+cnt+' kusy? Nelze vrátit.',function(){
+    items=items.filter(function(i){ return i.lotId!==id; });
+    lots=lots.filter(function(l){ return l.id!==id; });
+    save(); initYearSelect(); render();
+  });
+}
+// přidání jednotlivého kusu rovnou do lotu (otevře běžný item modal s předvyplněným lotem)
+function openAddToLot(lotId){
+  openAdd();
+  pendingLotId=lotId;
+  var lot=lots.find(function(l){return l.id===lotId;});
+  document.getElementById('modal-title').textContent='Přidat kus do lotu: '+(lot?lot.name:'');
+}
+var pendingLotId=null;
+
 // ---------- Export CSV ----------
 function exportCSV(){
-  var head=['Nazev','Kategorie','Stav zbozi','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
+  var head=['Nazev','Lot','Kategorie','Stav zbozi','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
   var rows=items.map(function(i){
     var p=profit(i);
-    return [ i.name, i.cat||'', i.cond||'', (i.listed||[]).join(' / '), i.soldOn||'',
+    var lot=i.lotId ? (lots.find(function(l){return l.id===i.lotId;})||{}).name||'' : '';
+    return [ i.name, lot, i.cat||'', i.cond||'', (i.listed||[]).join(' / '), i.soldOn||'',
       i.buy||0, i.sell||0, i.cost||0, platformFee(i), (p===null?'':p),
       {skladem:'Skladem',vystaveno:'Vystaveno',prodano:'Prodano'}[i.status],
       (daysInStock(i)===null?'':daysInStock(i)), i.bought||'', i.sold||'', i.url||'', (i.note||'').replace(/[\r\n]+/g,' ') ];

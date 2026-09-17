@@ -348,7 +348,8 @@ tbody tr:hover { background: var(--panel-2); }
         <div class="sub">Nákup · Prodej · Zisk</div>
       </div>
     </div>
-    <div style="display:flex;gap:9px;flex-wrap:wrap">
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+      <span id="save-indicator" style="font-size:12.5px;display:none"></span>
       <button class="btn" onclick="openAdd()">+ Přidat telefon</button>
       <button class="btn ghost sm" onclick="openLot()">📦 Přidat lot</button>
       <button class="btn ghost sm" onclick="exportCSV()">↓ Export</button>
@@ -742,10 +743,33 @@ function loadData(){
     lots = (d && d.lots) ? d.lots : [];
     initYearSelect();
     render();
-  }, function(e){ console.error('load err', e); });
+  }, function(e){
+    console.error('load err', e);
+    showSaveStatus('✗ Nejde načíst data: '+e.message, 'var(--red)', true);
+  });
+}
+function showSaveStatus(text, color, keep){
+  var ind = document.getElementById('save-indicator');
+  if(!ind) return;
+  ind.textContent = text; ind.style.color = color; ind.style.display = 'inline';
+  if(!keep) setTimeout(function(){ if(ind.textContent===text) ind.style.display='none'; }, 2000);
 }
 function save(){
-  docRef().set({ items: items, lots: lots }, { merge: true }).catch(function(e){ console.error('save err', e); });
+  showSaveStatus('Ukládám…', 'var(--txt-faint)', true);
+  try{
+    // Firestore odmítá pole s hodnotou undefined (např. "est" u telefonů mimo lot) — tímhle se jich zbavíme
+    var cleanItems = JSON.parse(JSON.stringify(items));
+    var cleanLots = JSON.parse(JSON.stringify(lots));
+    return docRef().set({ items: cleanItems, lots: cleanLots }, { merge: true }).then(function(){
+      showSaveStatus('✓ Uloženo', 'var(--teal)', false);
+    }).catch(function(e){
+      console.error('save err', e);
+      showSaveStatus('✗ Uložení selhalo: '+e.message, 'var(--red)', true);
+    });
+  } catch(e){
+    console.error('save err (sync)', e);
+    showSaveStatus('✗ Uložení selhalo: '+e.message, 'var(--red)', true);
+  }
 }
 
 // ---------- Calc ----------
@@ -1081,6 +1105,7 @@ function updateCalcNote(){
   document.getElementById('calc-note').innerHTML='Čistý zisk: <b style="color:'+(p>=0?'var(--teal)':'var(--red)')+'">'+fmt(p)+'</b>'+(fee?' (po odečtení poplatku '+soldOn+' '+fmt(fee)+')':'');
 }
 function saveItem(){
+ try{
   var brand=document.getElementById('f-brand').value;
   var model=document.getElementById('f-model').value.trim();
   if(!model){ alert('Zadej model telefonu.'); return; }
@@ -1107,13 +1132,17 @@ function saveItem(){
   if(obj.status==='prodano' && !obj.sold) obj.sold=new Date().toISOString().slice(0,10);
   if(id){
     var idx=items.findIndex(function(i){return i.id===id;});
-    if(idx>=0){ obj.lotId=items[idx].lotId||null; obj.est=items[idx].est; items[idx]=obj; }
+    if(idx>=0){ obj.lotId=items[idx].lotId||null; obj.est=items[idx].est||null; items[idx]=obj; }
   } else {
     if(pendingLotId) obj.lotId=pendingLotId;
     items.push(obj);
   }
   pendingLotId=null;
   save(); initYearSelect(); render(); closeModal();
+ } catch(e){
+  console.error('saveItem err', e);
+  alert('Uložení se nepovedlo kvůli chybě: '+e.message);
+ }
 }
 
 // ---------- LOTY ----------

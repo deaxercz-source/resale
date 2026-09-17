@@ -145,17 +145,11 @@ header {
   border: 1px solid rgba(245,177,76,.3); border-radius: 14px;
   padding: 14px 16px; margin-bottom: 14px;
 }
-.alert-box.lockbox {
-  background: linear-gradient(135deg, rgba(242,89,107,.12), rgba(157,123,255,.07));
-  border: 1px solid rgba(242,89,107,.32);
-}
 .alert-box .ah { font-size: 13px; font-weight: 700; color: var(--amber); margin-bottom: 8px; display:flex; align-items:center; gap:7px; }
-.alert-box.lockbox .ah { color: var(--red); }
 .alert-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .alert-list li { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; flex-wrap: wrap; gap: 6px; }
 .alert-list .nm { color: var(--txt); }
 .alert-list .dd { color: var(--red); font-weight: 700; font-size: 12.5px; }
-.alert-list .dd.violet { color: var(--violet); }
 
 /* ---- panels & charts ---- */
 .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 22px; }
@@ -200,7 +194,6 @@ header {
   border-radius: 20px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .15s;
 }
 .chip.active { background: var(--teal); color: #04211d; border-color: var(--teal); font-weight: 600; }
-.chip.active.redchip { background: var(--red); color: #2a0208; border-color: var(--red); }
 
 .tbl-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
 table { width: 100%; border-collapse: collapse; }
@@ -225,8 +218,7 @@ tbody tr:hover { background: var(--panel-2); }
 .badge.vystaveno { background: rgba(245,177,76,.15); color: var(--amber); }
 .badge.prodano { background: rgba(45,212,191,.15); color: var(--teal); }
 .grade-tag { font-size: 11px; color: var(--txt-faint); background: var(--panel-2); border:1px solid var(--line); padding: 2px 8px; border-radius: 10px; }
-.lock-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(242,89,107,.15); color: var(--red); font-weight: 700; }
-.lock-badge.ok { background: rgba(45,212,191,.12); color: var(--teal); font-weight: 600; }
+.listed-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(91,156,246,.15); color: var(--blue); font-weight: 600; }
 .batt-badge { display: inline-flex; align-items: center; gap: 5px; vertical-align: middle; }
 .batt { width: 22px; height: 11px; border: 1.4px solid var(--txt-faint); border-radius: 2px; position: relative; padding: 1.5px; display: inline-flex; }
 .batt:after { content:''; position:absolute; right:-3.5px; top:3px; width:2px; height:5px; background:var(--txt-faint); border-radius:0 1px 1px 0; }
@@ -277,8 +269,12 @@ tbody tr:hover { background: var(--panel-2); }
   border-radius: 18px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .12s; user-select: none;
 }
 .mp-chip.on { background: rgba(245,177,76,.18); color: var(--amber); border-color: rgba(245,177,76,.4); font-weight: 600; }
-.mp-chip.on.acc { background: rgba(91,156,246,.18); color: var(--blue); border-color: rgba(91,156,246,.4); }
-.modal-foot { display: flex; gap: 10px; margin-top: 20px; }
+.modal-foot {
+  display: flex; gap: 10px;
+  position: sticky; bottom: -24px;
+  margin: 20px -24px -24px; padding: 14px 24px 24px;
+  background: var(--panel); border-top: 1px solid var(--line); z-index: 5;
+}
 .modal-foot .btn { flex: 1; justify-content: center; }
 .calc-note { font-size: 12.5px; color: var(--txt-faint); margin-top: 4px; }
 
@@ -388,10 +384,6 @@ tbody tr:hover { background: var(--panel-2); }
     <div class="ah">⚠ Ležáky — skladem přes 30 dní</div>
     <ul class="alert-list" id="alert-list"></ul>
   </div>
-  <div class="alert-box lockbox" id="lock-box" style="display:none">
-    <div class="ah">🔒 Uzamčené telefony — potřebují odemknutí</div>
-    <ul class="alert-list" id="lock-list"></ul>
-  </div>
 
   <!-- CHARTS -->
   <div class="grid-2">
@@ -406,8 +398,8 @@ tbody tr:hover { background: var(--panel-2); }
   </div>
   <div class="grid-2">
     <div class="panel">
-      <h2>Zisk podle značky</h2>
-      <div class="chart-h"><canvas id="chartBrand"></canvas></div>
+      <h2>Kde je aktuálně vystaveno</h2>
+      <div class="chart-h"><canvas id="chartListed"></canvas></div>
     </div>
     <div class="panel">
       <h2>Odkud nakupuji</h2>
@@ -466,10 +458,6 @@ tbody tr:hover { background: var(--panel-2); }
       <span class="chip" data-s="skladem" onclick="setFilter(this)">Skladem</span>
       <span class="chip" data-s="vystaveno" onclick="setFilter(this)">Vystaveno</span>
       <span class="chip" data-s="prodano" onclick="setFilter(this)">Prodáno</span>
-    </div>
-    <div class="chips" id="lock-chips">
-      <span class="chip active" data-l="vse" onclick="setLockFilter(this)">Vše</span>
-      <span class="chip" data-l="uzamcene" onclick="setLockFilter(this)">🔒 Jen uzamčené</span>
     </div>
   </div>
 
@@ -534,35 +522,15 @@ tbody tr:hover { background: var(--panel-2); }
         <input type="number" id="f-batt" min="0" max="100" placeholder="100">
       </div>
     </div>
-    <div class="frow">
-      <div class="fgrp">
-        <label>Stav zámku</label>
-        <select id="f-lock">
-          <option value="Odemčený">Odemčený</option>
-          <option value="Apple ID (uzamčeno)">Apple ID (uzamčeno)</option>
-          <option value="Google FRP (uzamčeno)">Google FRP (uzamčeno)</option>
-          <option value="Síťový zámek">Síťový zámek (SIM lock)</option>
-        </select>
-      </div>
-      <div class="fgrp">
-        <label>Kvalita / stav</label>
-        <select id="f-grade">
-          <option value="Jako nový">Jako nový</option>
-          <option value="Výborný">Výborný</option>
-          <option value="Dobrý">Dobrý</option>
-          <option value="Průměrný">Průměrný</option>
-          <option value="Na ND">Na ND (díly)</option>
-        </select>
-      </div>
-    </div>
     <div class="fgrp">
-      <label>Doplňky v balení</label>
-      <div class="multi-platform" id="f-access">
-        <span class="mp-chip acc" data-a="Krabička" onclick="toggleChip(this)">Krabička</span>
-        <span class="mp-chip acc" data-a="Nabíječka" onclick="toggleChip(this)">Nabíječka</span>
-        <span class="mp-chip acc" data-a="Sluchátka/kabel" onclick="toggleChip(this)">Sluchátka/kabel</span>
-        <span class="mp-chip acc" data-a="Ochranné sklo/kryt" onclick="toggleChip(this)">Ochranné sklo/kryt</span>
-      </div>
+      <label>Kvalita / stav</label>
+      <select id="f-grade">
+        <option value="Jako nový">Jako nový</option>
+        <option value="Výborný">Výborný</option>
+        <option value="Dobrý">Dobrý</option>
+        <option value="Průměrný">Průměrný</option>
+        <option value="Na ND">Na ND (díly)</option>
+      </select>
     </div>
     <div class="frow">
       <div class="fgrp">
@@ -623,13 +591,9 @@ tbody tr:hover { background: var(--panel-2); }
         <input type="number" id="f-cost" placeholder="oprava, nová baterie, sklo…">
       </div>
       <div class="fgrp">
-        <label>IMEI / sériové číslo</label>
-        <input type="text" id="f-imei" placeholder="volitelné">
+        <label>Odkaz na inzerát</label>
+        <input type="text" id="f-url" placeholder="https://…">
       </div>
-    </div>
-    <div class="fgrp">
-      <label>Odkaz na inzerát</label>
-      <input type="text" id="f-url" placeholder="https://…">
     </div>
     <div class="frow">
       <div class="fgrp">
@@ -733,10 +697,9 @@ var STOCK_WARN = 30; // dní
 var items = [];
 var lots = [];
 var filterStatus = 'vse';
-var filterLock = 'vse';
 var period = 'vse';
 var uid = null;
-var chartMonth=null, chartPlatform=null, chartBrand=null, chartSource=null;
+var chartMonth=null, chartPlatform=null, chartListed=null, chartSource=null;
 
 // ---------- Auth ----------
 auth.onAuthStateChanged(function(user){
@@ -806,7 +769,6 @@ function fmt(n){
   return new Intl.NumberFormat('cs-CZ').format(Math.round(n)) + ' Kč';
 }
 function displayName(it){ return ((it.brand||'')+' '+(it.model||'')).trim() || 'Bez názvu'; }
-function isLocked(it){ return !!it.lock && it.lock !== 'Odemčený'; }
 function inPeriod(dateStr){
   if(period==='vse') return true;
   if(!dateStr) return false;
@@ -832,14 +794,6 @@ function setFilter(el){
   filterStatus = el.getAttribute('data-s');
   render();
 }
-function setLockFilter(el){
-  document.querySelectorAll('#lock-chips .chip').forEach(function(c){ c.classList.remove('active','redchip'); });
-  el.classList.add('active');
-  filterLock = el.getAttribute('data-l');
-  if(filterLock==='uzamcene') el.classList.add('redchip');
-  render();
-}
-
 // ---------- Render ----------
 function render(){
   renderCards();
@@ -884,14 +838,6 @@ function renderAlerts(){
       return '<li><span class="nm">'+esc(displayName(i))+' <span class="meta" style="color:var(--txt-faint);font-size:12px">('+fmt(i.buy)+' v zásobě)</span></span><span class="dd">'+daysInStock(i)+' dní — zlevni nebo přebal</span></li>';
     }).join('');
   }
-  var locked = items.filter(function(i){ return i.status!=='prodano' && isLocked(i); });
-  var lbox = document.getElementById('lock-box');
-  if(locked.length===0){ lbox.style.display='none'; } else {
-    lbox.style.display='block';
-    document.getElementById('lock-list').innerHTML = locked.map(function(i){
-      return '<li><span class="nm">'+esc(displayName(i))+'</span><span class="dd violet">'+esc(i.lock)+'</span></li>';
-    }).join('');
-  }
 }
 function renderTopFlop(){
   var sold = soldInPeriod();
@@ -925,7 +871,6 @@ function renderTable(){
   var q = document.getElementById('search').value.toLowerCase();
   var list = items.filter(function(i){
     if(filterStatus!=='vse' && i.status!==filterStatus) return false;
-    if(filterLock==='uzamcene' && !isLocked(i)) return false;
     if(q && displayName(i).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
@@ -942,12 +887,13 @@ function renderTable(){
     var statusLbl = {skladem:'Skladem', vystaveno:'Vystaveno', prodano:'Prodáno'}[i.status];
     var link = i.url ? ' <a class="link-ico" href="'+esc(i.url)+'" target="_blank" rel="noopener">↗</a>' : '';
     var grade = i.grade ? '<span class="grade-tag">'+esc(i.grade)+'</span>' : '';
-    var lockTag = isLocked(i) ? '<span class="lock-badge">🔒 '+esc(i.lock)+'</span>' : (i.lock ? '<span class="lock-badge ok">Odemčený</span>' : '');
     var note = i.note ? '<div class="tnote">'+esc(i.note)+'</div>' : '';
     var details = [i.storage, i.color].filter(Boolean).map(esc).join(' · ');
+    var listedTags = (i.listed&&i.listed.length) ? '<div class="ttags">'+i.listed.map(function(pl){ return '<span class="listed-tag">📍 '+esc(pl)+'</span>'; }).join('')+'</div>' : '';
     return '<tr>'+
       '<td><div class="tname">'+esc(displayName(i))+link+'</div>'+
-        '<div class="ttags">'+(details?'<span class="grade-tag">'+details+'</span>':'')+grade+battBadge(i.batt)+lockTag+'</div>'+
+        listedTags+
+        '<div class="ttags">'+(details?'<span class="grade-tag">'+details+'</span>':'')+grade+battBadge(i.batt)+'</div>'+
         note+'</td>'+
       '<td class="hide-m">'+esc(i.boughtOn||'—')+'</td>'+
       '<td>'+fmt(i.buy)+'</td>'+
@@ -994,10 +940,6 @@ function renderYear(){
   var best = Object.keys(byMonth).sort(function(a,b){ return byMonth[b]-byMonth[a]; })[0];
   var mNames = {'01':'leden','02':'únor','03':'březen','04':'duben','05':'květen','06':'červen','07':'červenec','08':'srpen','09':'září','10':'říjen','11':'listopad','12':'prosinec'};
   var bestLbl = best ? mNames[best]+' ('+fmt(byMonth[best])+')' : '—';
-  var byBrand = {};
-  sold.forEach(function(i){ var b=i.brand||'Jiná'; byBrand[b]=(byBrand[b]||0)+1; });
-  var topBrand = Object.keys(byBrand).sort(function(a,b){ return byBrand[b]-byBrand[a]; })[0];
-  var topBrandLbl = topBrand ? topBrand+' ('+byBrand[topBrand]+' ks)' : '—';
   var g = document.getElementById('year-grid');
   g.innerHTML =
     yc('Nakoupeno za', fmt(spent)) +
@@ -1005,8 +947,7 @@ function renderYear(){
     yc('Čistý zisk', fmt(prof), 'teal') +
     yc('Kusů prodáno', sold.length) +
     yc('Průměrná marže', margin+' %') +
-    yc('Nejlepší měsíc', bestLbl) +
-    yc('Nejprodávanější značka', topBrandLbl);
+    yc('Nejlepší měsíc', bestLbl);
 }
 function yc(k,v,cls){ return '<div class="year-cell"><div class="yk">'+k+'</div><div class="yv '+(cls||'')+'">'+v+'</div></div>'; }
 
@@ -1031,13 +972,14 @@ function renderCharts(){
     data:{ labels:Object.keys(byPlat), datasets:[{ data:Object.values(byPlat), backgroundColor:['#2dd4bf','#5b9cf6','#f2b84b','#9d7bff','#f2596b','#57637a'], borderColor:'#121822', borderWidth:2 }] },
     options: donutOpts()
   });
-  var byBrand = {};
-  sold.forEach(function(i){ var k=i.brand||'Jiná'; byBrand[k]=(byBrand[k]||0)+profit(i); });
-  if(chartBrand) chartBrand.destroy();
-  chartBrand = new Chart(document.getElementById('chartBrand'), {
-    type:'bar',
-    data:{ labels:Object.keys(byBrand), datasets:[{ data:Object.values(byBrand), backgroundColor:'#9d7bff', borderRadius:6 }] },
-    options: chartOpts()
+  var activeListed = items.filter(function(i){ return i.status!=='prodano' && i.listed && i.listed.length; });
+  var cntListed = {};
+  activeListed.forEach(function(i){ i.listed.forEach(function(pl){ cntListed[pl]=(cntListed[pl]||0)+1; }); });
+  if(chartListed) chartListed.destroy();
+  chartListed = new Chart(document.getElementById('chartListed'), {
+    type:'doughnut',
+    data:{ labels:Object.keys(cntListed), datasets:[{ data:Object.values(cntListed), backgroundColor:['#5b9cf6','#2dd4bf','#f2b84b','#9d7bff','#f2596b','#57637a'], borderColor:'#121822', borderWidth:2 }] },
+    options: donutOpts(true)
   });
   var boughtAll = items.filter(function(i){ return inPeriod(i.bought); });
   var cntSrc = {};
@@ -1083,9 +1025,7 @@ function openAdd(){
   document.getElementById('f-storage').value='';
   document.getElementById('f-color').value='';
   document.getElementById('f-batt').value='';
-  document.getElementById('f-lock').value='Odemčený';
   document.getElementById('f-grade').value='Dobrý';
-  setChips('f-access','data-a',[]);
   document.getElementById('f-boughton').value='Vinted';
   setChips('f-listed','data-pl',[]);
   document.getElementById('f-soldon').value='';
@@ -1093,7 +1033,6 @@ function openAdd(){
   document.getElementById('f-buy').value='';
   document.getElementById('f-sell').value='';
   document.getElementById('f-cost').value='';
-  document.getElementById('f-imei').value='';
   document.getElementById('f-url').value='';
   document.getElementById('f-bought').value=new Date().toISOString().slice(0,10);
   document.getElementById('f-sold').value='';
@@ -1111,9 +1050,7 @@ function openEdit(id){
   document.getElementById('f-storage').value=it.storage||'';
   document.getElementById('f-color').value=it.color||'';
   document.getElementById('f-batt').value=it.batt!==undefined?it.batt:'';
-  document.getElementById('f-lock').value=it.lock||'Odemčený';
   document.getElementById('f-grade').value=it.grade||'Dobrý';
-  setChips('f-access','data-a',it.access||[]);
   document.getElementById('f-boughton').value=it.boughtOn||'Vinted';
   setChips('f-listed','data-pl',it.listed||[]);
   document.getElementById('f-soldon').value=it.soldOn||'';
@@ -1121,7 +1058,6 @@ function openEdit(id){
   document.getElementById('f-buy').value=it.buy||'';
   document.getElementById('f-sell').value=it.sell||'';
   document.getElementById('f-cost').value=it.cost||'';
-  document.getElementById('f-imei').value=it.imei||'';
   document.getElementById('f-url').value=it.url||'';
   document.getElementById('f-bought').value=it.bought||'';
   document.getElementById('f-sold').value=it.sold||'';
@@ -1155,9 +1091,7 @@ function saveItem(){
     storage:document.getElementById('f-storage').value.trim(),
     color:document.getElementById('f-color').value.trim(),
     batt:document.getElementById('f-batt').value===''?null:+document.getElementById('f-batt').value,
-    lock:document.getElementById('f-lock').value,
     grade:document.getElementById('f-grade').value,
-    access:getChips('f-access','data-a'),
     boughtOn:document.getElementById('f-boughton').value,
     listed:getChips('f-listed','data-pl'),
     soldOn:document.getElementById('f-soldon').value,
@@ -1165,7 +1099,6 @@ function saveItem(){
     buy:+document.getElementById('f-buy').value||0,
     sell:+document.getElementById('f-sell').value||0,
     cost:+document.getElementById('f-cost').value||0,
-    imei:document.getElementById('f-imei').value.trim(),
     url:document.getElementById('f-url').value.trim(),
     bought:document.getElementById('f-bought').value||'',
     sold:document.getElementById('f-sold').value||'',
@@ -1347,9 +1280,9 @@ function saveLot(){
       if(it){ it.brand=brandGuess; it.model=modelGuess; it.storage=r.storage; it.est=+r.est; if(it.status!=='prodano'){ it.buy=alloc; } }
     } else {
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        brand:brandGuess, model:modelGuess, storage:r.storage, color:'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        brand:brandGuess, model:modelGuess, storage:r.storage, color:'', batt:null, grade:'Dobrý',
         boughtOn:source, listed:[], soldOn:'',
-        buy:alloc, sell:0, cost:0, status:'skladem', imei:'', url:'',
+        buy:alloc, sell:0, cost:0, status:'skladem', url:'',
         bought:date||new Date().toISOString().slice(0,10), sold:'', note:'',
         lotId:lotId, est:+r.est });
     }
@@ -1376,15 +1309,15 @@ var pendingLotId=null;
 
 // ---------- Export CSV ----------
 function exportCSV(){
-  var head=['Znacka','Model','Uloziste','Barva','Baterie %','Zamek','Kvalita','Lot','Koupeno na','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','IMEI','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
+  var head=['Znacka','Model','Uloziste','Barva','Baterie %','Kvalita','Lot','Koupeno na','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
   var rows=items.map(function(i){
     var p=profit(i);
     var lot=i.lotId ? (lots.find(function(l){return l.id===i.lotId;})||{}).name||'' : '';
-    return [ i.brand||'', i.model||'', i.storage||'', i.color||'', (i.batt!==undefined&&i.batt!==null?i.batt:''), i.lock||'', i.grade||'', lot,
+    return [ i.brand||'', i.model||'', i.storage||'', i.color||'', (i.batt!==undefined&&i.batt!==null?i.batt:''), i.grade||'', lot,
       i.boughtOn||'', (i.listed||[]).join(' / '), i.soldOn||'',
       i.buy||0, i.sell||0, i.cost||0, platformFee(i), (p===null?'':p),
       {skladem:'Skladem',vystaveno:'Vystaveno',prodano:'Prodano'}[i.status],
-      (daysInStock(i)===null?'':daysInStock(i)), i.imei||'', i.bought||'', i.sold||'', i.url||'', (i.note||'').replace(/[\r\n]+/g,' ') ];
+      (daysInStock(i)===null?'':daysInStock(i)), i.bought||'', i.sold||'', i.url||'', (i.note||'').replace(/[\r\n]+/g,' ') ];
   });
   var csv=[head].concat(rows).map(function(r){
     return r.map(function(c){ var s=(''+c).replace(/"/g,'""'); return '"'+s+'"'; }).join(';');
@@ -1448,9 +1381,9 @@ function applyAI(p){
   if(p.action==='buy' && p.items){
     p.items.forEach(function(x){
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        brand:x.brand||'Jiná', model:x.model||'', storage:x.storage||'', color:x.color||'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        brand:x.brand||'Jiná', model:x.model||'', storage:x.storage||'', color:x.color||'', batt:null, grade:'Dobrý',
         boughtOn:'Vinted', listed:[], soldOn:'',
-        buy:+x.buy||0, sell:0, cost:0, status:'skladem', imei:'', url:'', bought:today, sold:'', note:'' });
+        buy:+x.buy||0, sell:0, cost:0, status:'skladem', url:'', bought:today, sold:'', note:'' });
     });
     st.textContent='✓ Přidáno do skladu: '+p.items.map(function(x){return (x.brand||'')+' '+(x.model||'');}).join(', ');
     save(); initYearSelect(); render();
@@ -1463,9 +1396,9 @@ function applyAI(p){
     } else {
       var parts=(p.name||'').trim().split(' ');
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        brand:parts[0]||'Jiná', model:parts.slice(1).join(' ')||p.name||'', storage:'', color:'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        brand:parts[0]||'Jiná', model:parts.slice(1).join(' ')||p.name||'', storage:'', color:'', batt:null, grade:'Dobrý',
         boughtOn:'Vinted', listed:[], soldOn:p.soldOn||'Vinted',
-        buy:0, sell:+p.sell||0, cost:0, status:'prodano', imei:'', url:'', bought:'', sold:today, note:'' });
+        buy:0, sell:+p.sell||0, cost:0, status:'prodano', url:'', bought:'', sold:today, note:'' });
       st.textContent='✓ Přidán prodej: '+(p.name||'')+' za '+fmt(+p.sell||0)+' (nákup neznámý, doplň ho)';
     }
     save(); initYearSelect(); render();

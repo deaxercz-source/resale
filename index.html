@@ -3,46 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0d0f14">
+<meta name="theme-color" content="#0a0e15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Resale — evidence konzolí a her</title>
+<title>Telefony — evidence a zisk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <style>
 :root {
-  --bg: #0d0f14;
-  --panel: #161922;
-  --panel-2: #1d212c;
-  --line: #272c39;
-  --line-soft: #20242f;
-  --txt: #eef0f6;
-  --txt-dim: #9298ab;
-  --txt-faint: #5d6377;
-  --green: #3ddc91;
-  --green-deep: #1f9d68;
-  --amber: #f5b14c;
-  --red: #f25c6e;
-  --blue: #5aa9ff;
-  --violet: #a98bff;
-  --shadow: 0 8px 30px rgba(0,0,0,.4);
+  --bg: #0a0e15;
+  --panel: #121822;
+  --panel-2: #182130;
+  --line: #232c3d;
+  --line-soft: #1b2331;
+  --txt: #eef2f7;
+  --txt-dim: #8b96ab;
+  --txt-faint: #57637a;
+  --teal: #2dd4bf;
+  --teal-deep: #159c8f;
+  --amber: #f2b84b;
+  --red: #f2596b;
+  --violet: #9d7bff;
+  --blue: #5b9cf6;
+  --shadow: 0 10px 34px rgba(0,0,0,.45);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   background: var(--bg);
   color: var(--txt);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
   min-height: 100vh;
   font-size: 15px;
   padding-bottom: 90px;
   background-image:
-    radial-gradient(circle at 12% -5%, rgba(61,220,145,.07), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(169,139,255,.05), transparent 42%);
+    radial-gradient(circle at 10% -5%, rgba(45,212,191,.08), transparent 40%),
+    radial-gradient(circle at 92% 4%, rgba(157,123,255,.05), transparent 42%);
 }
 .mono { font-family: 'JetBrains Mono', monospace; }
 .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 18px; }
@@ -60,10 +60,10 @@ body {
 }
 .login-card .mark {
   width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 18px;
-  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
   display: flex; align-items: center; justify-content: center;
-  font-size: 26px; font-weight: 800; color: #06140d;
-  box-shadow: 0 0 34px rgba(61,220,145,.35);
+  font-size: 26px; color: #04211d;
+  box-shadow: 0 0 34px rgba(45,212,191,.35);
 }
 .login-card h1 { font-size: 21px; margin-bottom: 6px; letter-spacing: -.3px; }
 .login-card p { color: var(--txt-dim); font-size: 13.5px; margin-bottom: 24px; }
@@ -72,7 +72,7 @@ body {
   background: var(--panel-2); border: 1px solid var(--line);
   border-radius: 11px; color: var(--txt); font-size: 15px; font-family: inherit;
 }
-.login-card input:focus { outline: none; border-color: var(--green); }
+.login-card input:focus { outline: none; border-color: var(--teal); }
 .login-card .err { color: var(--red); font-size: 13px; min-height: 18px; margin-bottom: 8px; }
 
 /* ---- header ---- */
@@ -83,22 +83,22 @@ header {
 .brand { display: flex; align-items: center; gap: 13px; }
 .brand .mark {
   width: 42px; height: 42px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--green), var(--green-deep));
+  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
   display: flex; align-items: center; justify-content: center;
-  font-weight: 800; color: #06140d; font-size: 19px;
-  box-shadow: 0 0 26px rgba(61,220,145,.3);
+  font-size: 20px; color: #04211d;
+  box-shadow: 0 0 26px rgba(45,212,191,.3);
 }
 .brand h1 { font-size: 19px; letter-spacing: -.4px; }
 .brand .sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
 .btn {
-  background: var(--green); color: #06140d; border: none;
+  background: var(--teal); color: #04211d; border: none;
   padding: 11px 18px; border-radius: 11px; font-weight: 700;
   font-size: 14px; cursor: pointer; font-family: inherit; transition: .15s;
   display: inline-flex; align-items: center; gap: 7px;
 }
 .btn:hover { filter: brightness(1.08); }
 .btn.ghost { background: var(--panel-2); color: var(--txt); border: 1px solid var(--line); }
-.btn.danger { background: transparent; color: var(--red); border: 1px solid rgba(242,92,110,.4); }
+.btn.danger { background: transparent; color: var(--red); border: 1px solid rgba(242,89,107,.4); }
 .btn.sm { padding: 8px 13px; font-size: 13px; }
 
 /* ---- period switch ---- */
@@ -121,43 +121,49 @@ header {
   border: 1px solid var(--line); border-radius: 11px; color: var(--txt);
   font-size: 15px; font-family: inherit;
 }
-.ai-row input:focus { outline: none; border-color: var(--green); }
+.ai-row input:focus { outline: none; border-color: var(--teal); }
 .ai-hint { font-size: 12px; color: var(--txt-faint); margin-top: 9px; }
 .ai-status { font-size: 13px; margin-top: 9px; min-height: 16px; }
 
 /* ---- stat cards ---- */
-.cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-bottom: 22px; }
+.cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 13px; margin-bottom: 22px; }
 .card {
   background: var(--panel); border: 1px solid var(--line);
   border-radius: 16px; padding: 17px 18px; position: relative; overflow: hidden;
 }
 .card .k { font-size: 12px; color: var(--txt-dim); margin-bottom: 8px; letter-spacing: .3px; }
-.card .v { font-size: 25px; font-weight: 700; letter-spacing: -.6px; }
-.card .v.green { color: var(--green); }
+.card .v { font-size: 24px; font-weight: 700; letter-spacing: -.6px; }
+.card .v.teal { color: var(--teal); }
 .card .v.amber { color: var(--amber); }
 .card .v.blue { color: var(--blue); }
+.card .v.violet { color: var(--violet); }
 .card .sub2 { font-size: 12px; color: var(--txt-faint); margin-top: 4px; }
 
-/* ---- alert ležáky ---- */
+/* ---- alert boxes ---- */
 .alert-box {
-  background: linear-gradient(135deg, rgba(245,177,76,.12), rgba(242,92,110,.08));
+  background: linear-gradient(135deg, rgba(245,177,76,.12), rgba(242,89,107,.07));
   border: 1px solid rgba(245,177,76,.3); border-radius: 14px;
-  padding: 14px 16px; margin-bottom: 22px;
+  padding: 14px 16px; margin-bottom: 14px;
+}
+.alert-box.lockbox {
+  background: linear-gradient(135deg, rgba(242,89,107,.12), rgba(157,123,255,.07));
+  border: 1px solid rgba(242,89,107,.32);
 }
 .alert-box .ah { font-size: 13px; font-weight: 700; color: var(--amber); margin-bottom: 8px; display:flex; align-items:center; gap:7px; }
+.alert-box.lockbox .ah { color: var(--red); }
 .alert-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .alert-list li { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; flex-wrap: wrap; gap: 6px; }
 .alert-list .nm { color: var(--txt); }
 .alert-list .dd { color: var(--red); font-weight: 700; font-size: 12.5px; }
+.alert-list .dd.violet { color: var(--violet); }
 
 /* ---- panels & charts ---- */
 .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 22px; }
-.grid-cat { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
 .panel {
   background: var(--panel); border: 1px solid var(--line);
   border-radius: 16px; padding: 18px;
 }
-.panel h2 { font-size: 15px; margin-bottom: 14px; font-weight: 600; }
+.panel h2 { font-size: 15px; margin-bottom: 14px; font-weight: 700; letter-spacing: -.2px; }
 .chart-h { height: 230px; position: relative; }
 
 /* ---- yearly summary ---- */
@@ -167,7 +173,7 @@ header {
 .year-cell { background: var(--panel-2); border: 1px solid var(--line-soft); border-radius: 12px; padding: 14px; }
 .year-cell .yk { font-size: 11.5px; color: var(--txt-faint); margin-bottom: 6px; letter-spacing:.3px; }
 .year-cell .yv { font-size: 19px; font-weight: 700; letter-spacing: -.4px; }
-.year-cell .yv.green { color: var(--green); }
+.year-cell .yv.teal { color: var(--teal); }
 
 /* ---- topflop ---- */
 .tf { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
@@ -187,38 +193,46 @@ header {
   flex: 1; min-width: 160px; padding: 10px 14px; background: var(--panel);
   border: 1px solid var(--line); border-radius: 10px; color: var(--txt); font-size: 14px; font-family: inherit;
 }
-.toolbar input:focus { outline: none; border-color: var(--green); }
+.toolbar input:focus { outline: none; border-color: var(--teal); }
 .chips { display: flex; gap: 7px; flex-wrap: wrap; }
 .chip {
   padding: 8px 13px; background: var(--panel); border: 1px solid var(--line);
   border-radius: 20px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .15s;
 }
-.chip.active { background: var(--green); color: #06140d; border-color: var(--green); font-weight: 600; }
+.chip.active { background: var(--teal); color: #04211d; border-color: var(--teal); font-weight: 600; }
+.chip.active.redchip { background: var(--red); color: #2a0208; border-color: var(--red); }
 
 .tbl-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
 table { width: 100%; border-collapse: collapse; }
 th {
   text-align: left; padding: 13px 14px; font-size: 11.5px; color: var(--txt-faint);
-  text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--line); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--line); font-weight: 700;
 }
 td { padding: 13px 14px; border-bottom: 1px solid var(--line-soft); font-size: 14px; vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tbody tr { transition: background .12s; }
 tbody tr:hover { background: var(--panel-2); }
-.tname { font-weight: 600; display:flex; align-items:center; gap:7px; }
-.tcat { font-size: 12px; color: var(--txt-faint); margin-top: 2px; }
-.tnote { font-size: 12px; color: var(--amber); margin-top: 3px; font-style: italic; }
+.tname { font-weight: 700; display:flex; align-items:center; gap:7px; flex-wrap: wrap; }
+.ttags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
+.tnote { font-size: 12px; color: var(--amber); margin-top: 4px; font-style: italic; }
 .link-ico { color: var(--blue); text-decoration: none; font-size: 13px; }
 .link-ico:hover { text-decoration: underline; }
 .badge {
   display: inline-block; padding: 3px 10px; border-radius: 20px;
   font-size: 12px; font-weight: 600;
 }
-.badge.skladem { background: rgba(90,169,255,.15); color: var(--blue); }
+.badge.skladem { background: rgba(91,156,246,.15); color: var(--blue); }
 .badge.vystaveno { background: rgba(245,177,76,.15); color: var(--amber); }
-.badge.prodano { background: rgba(61,220,145,.15); color: var(--green); }
-.cond-tag { font-size: 11px; color: var(--txt-faint); background: var(--panel-2); border:1px solid var(--line); padding: 1px 7px; border-radius: 10px; }
-.profit-pos { color: var(--green); font-weight: 700; }
+.badge.prodano { background: rgba(45,212,191,.15); color: var(--teal); }
+.grade-tag { font-size: 11px; color: var(--txt-faint); background: var(--panel-2); border:1px solid var(--line); padding: 2px 8px; border-radius: 10px; }
+.lock-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(242,89,107,.15); color: var(--red); font-weight: 700; }
+.lock-badge.ok { background: rgba(45,212,191,.12); color: var(--teal); font-weight: 600; }
+.batt-badge { display: inline-flex; align-items: center; gap: 5px; vertical-align: middle; }
+.batt { width: 22px; height: 11px; border: 1.4px solid var(--txt-faint); border-radius: 2px; position: relative; padding: 1.5px; display: inline-flex; }
+.batt:after { content:''; position:absolute; right:-3.5px; top:3px; width:2px; height:5px; background:var(--txt-faint); border-radius:0 1px 1px 0; }
+.batt-fill { height: 100%; border-radius: 1px; display: block; }
+.batt-pct { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+.profit-pos { color: var(--teal); font-weight: 700; }
 .profit-neg { color: var(--red); font-weight: 700; }
 .days-ok { color: var(--txt-dim); }
 .days-warn { color: var(--amber); font-weight: 600; }
@@ -230,19 +244,19 @@ tbody tr:hover { background: var(--panel-2); }
   display: inline-flex; align-items: center; justify-content: center; transition: .12s;
 }
 .icon-btn:hover { color: var(--txt); border-color: var(--line-soft); }
-.icon-btn.del:hover { color: var(--red); border-color: rgba(242,92,110,.4); }
+.icon-btn.del:hover { color: var(--red); border-color: rgba(242,89,107,.4); }
 .empty { text-align: center; padding: 46px 20px; color: var(--txt-faint); }
 
 /* ---- modal ---- */
 .modal-bg {
-  position: fixed; inset: 0; background: rgba(5,7,11,.72); z-index: 500;
+  position: fixed; inset: 0; background: rgba(4,6,10,.72); z-index: 500;
   display: none; align-items: center; justify-content: center; padding: 18px;
   backdrop-filter: blur(3px);
 }
 .modal-bg.show { display: flex; }
 .modal {
   background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
-  padding: 24px; width: 100%; max-width: 500px; box-shadow: var(--shadow);
+  padding: 24px; width: 100%; max-width: 520px; box-shadow: var(--shadow);
   max-height: 92vh; overflow-y: auto;
 }
 .modal h3 { font-size: 18px; margin-bottom: 18px; }
@@ -254,19 +268,21 @@ tbody tr:hover { background: var(--panel-2); }
   font-size: 15px; font-family: inherit;
 }
 .fgrp textarea { resize: vertical; min-height: 52px; }
-.fgrp input:focus, .fgrp select:focus, .fgrp textarea:focus { outline: none; border-color: var(--green); }
+.fgrp input:focus, .fgrp select:focus, .fgrp textarea:focus { outline: none; border-color: var(--teal); }
 .frow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.frow3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .multi-platform { display: flex; flex-wrap: wrap; gap: 7px; }
 .mp-chip {
   padding: 7px 12px; background: var(--panel-2); border: 1px solid var(--line);
   border-radius: 18px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .12s; user-select: none;
 }
 .mp-chip.on { background: rgba(245,177,76,.18); color: var(--amber); border-color: rgba(245,177,76,.4); font-weight: 600; }
+.mp-chip.on.acc { background: rgba(91,156,246,.18); color: var(--blue); border-color: rgba(91,156,246,.4); }
 .modal-foot { display: flex; gap: 10px; margin-top: 20px; }
 .modal-foot .btn { flex: 1; justify-content: center; }
 .calc-note { font-size: 12.5px; color: var(--txt-faint); margin-top: 4px; }
 
-/* ---- loty ---- */
+/* ---- lots ---- */
 .lot-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 15px 16px; margin-bottom: 12px; }
 .lot-card:last-child { margin-bottom: 0; }
 .lot-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -276,10 +292,10 @@ tbody tr:hover { background: var(--panel-2); }
 .lot-prof .lp-v { font-size: 19px; font-weight: 700; letter-spacing: -.4px; }
 .lot-prof .lp-lbl { font-size: 11px; color: var(--txt-faint); }
 .lot-bar-wrap { height: 8px; background: var(--line); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
-.lot-bar { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-deep)); border-radius: 6px; transition: width .3s; }
+.lot-bar { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-deep)); border-radius: 6px; transition: width .3s; }
 .lot-stats { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--txt-dim); margin-bottom: 4px; }
 .lot-stats b { color: var(--txt); }
-.lot-recouped { color: var(--green); font-weight: 700; font-size: 12.5px; }
+.lot-recouped { color: var(--teal); font-weight: 700; font-size: 12.5px; }
 .lot-actions { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
 .lot-items { margin-top: 10px; border-top: 1px solid var(--line-soft); padding-top: 10px; display: none; }
 .lot-items.open { display: block; }
@@ -288,12 +304,11 @@ tbody tr:hover { background: var(--panel-2); }
 .lot-item-row .lir-name { flex: 1; }
 .lot-item-row .lir-status { font-size: 11px; }
 
-/* ---- lot builder rows ---- */
 .lb-head { display: grid; grid-template-columns: 1fr 90px 90px 30px; gap: 8px; font-size: 11px; color: var(--txt-faint); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; padding: 0 2px; }
 .lb-row { display: grid; grid-template-columns: 1fr 90px 90px 30px; gap: 8px; margin-bottom: 8px; align-items: center; }
 .lb-row input, .lb-row select { padding: 9px 10px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; color: var(--txt); font-size: 14px; font-family: inherit; width: 100%; }
-.lb-row input:focus, .lb-row select:focus { outline: none; border-color: var(--green); }
-.lb-alloc { font-size: 12px; color: var(--green); text-align: center; }
+.lb-row input:focus, .lb-row select:focus { outline: none; border-color: var(--teal); }
+.lb-alloc { font-size: 12px; color: var(--teal); text-align: center; }
 .lb-del { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel-2); color: var(--txt-faint); cursor: pointer; font-size: 13px; }
 .lb-del:hover { color: var(--red); }
 .lb-summary { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; margin-top: 10px; font-size: 13px; color: var(--txt-dim); }
@@ -305,8 +320,8 @@ tbody tr:hover { background: var(--panel-2); }
 
 @media (max-width: 860px) {
   .cards { grid-template-columns: 1fr 1fr; }
-  .grid-2, .tf, .grid-cat { grid-template-columns: 1fr; }
-  .frow { grid-template-columns: 1fr; }
+  .grid-2, .tf { grid-template-columns: 1fr; }
+  .frow, .frow3 { grid-template-columns: 1fr; }
   .year-grid { grid-template-columns: 1fr 1fr; }
   th.hide-m, td.hide-m { display: none; }
 }
@@ -317,9 +332,9 @@ tbody tr:hover { background: var(--panel-2); }
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="mark">R</div>
-    <h1>Resale</h1>
-    <p>Evidence konzolí, her a zisku</p>
+    <div class="mark">📱</div>
+    <h1>Telefony</h1>
+    <p>Evidence nákupu, prodeje a zisku</p>
     <input type="email" id="login-email" placeholder="E-mail" autocomplete="username">
     <input type="password" id="login-pass" placeholder="Heslo" autocomplete="current-password">
     <div class="err" id="login-err"></div>
@@ -331,14 +346,14 @@ tbody tr:hover { background: var(--panel-2); }
 <div class="wrap" id="app" style="display:none">
   <header>
     <div class="brand">
-      <div class="mark">R</div>
+      <div class="mark">📱</div>
       <div>
-        <h1>Resale</h1>
-        <div class="sub">Konzole · Hry · Telefony</div>
+        <h1>Telefony</h1>
+        <div class="sub">Nákup · Prodej · Zisk</div>
       </div>
     </div>
     <div style="display:flex;gap:9px;flex-wrap:wrap">
-      <button class="btn" onclick="openAdd()">+ Přidat položku</button>
+      <button class="btn" onclick="openAdd()">+ Přidat telefon</button>
       <button class="btn ghost sm" onclick="openLot()">📦 Přidat lot</button>
       <button class="btn ghost sm" onclick="exportCSV()">↓ Export</button>
       <button class="btn ghost sm" onclick="doLogout()">Odhlásit</button>
@@ -358,20 +373,24 @@ tbody tr:hover { background: var(--panel-2); }
   <div class="ai-box">
     <div class="lbl">⚡ Rychlé zadání textem</div>
     <div class="ai-row">
-      <input type="text" id="ai-input" placeholder='Např.: "koupil jsem Xbox 360 za 800" nebo "prodal jsem PS4 za 3500 na Aukru"' onkeydown="if(event.key==='Enter')runAI()">
+      <input type="text" id="ai-input" placeholder='Např.: "koupil jsem iPhone 12 128GB černý za 4500 na Vinted" nebo "prodal jsem Samsung S21 za 6000 na Bazoši"' onkeydown="if(event.key==='Enter')runAI()">
       <button class="btn" onclick="runAI()" id="ai-btn">Zpracovat</button>
     </div>
     <div class="ai-status" id="ai-status"></div>
-    <div class="ai-hint">Funguje jen na nasazené appce, ne v náhledu. Umí nákup, prodej i balík víc věcí.</div>
+    <div class="ai-hint">Funguje jen na nasazené appce, ne v náhledu. Umí nákup, prodej i balík víc kusů.</div>
   </div>
 
   <!-- STAT CARDS -->
   <div class="cards" id="cards"></div>
 
-  <!-- LEŽÁKY ALERT -->
+  <!-- ALERTS -->
   <div class="alert-box" id="alert-box" style="display:none">
     <div class="ah">⚠ Ležáky — skladem přes 30 dní</div>
     <ul class="alert-list" id="alert-list"></ul>
+  </div>
+  <div class="alert-box lockbox" id="lock-box" style="display:none">
+    <div class="ah">🔒 Uzamčené telefony — potřebují odemknutí</div>
+    <ul class="alert-list" id="lock-list"></ul>
   </div>
 
   <!-- CHARTS -->
@@ -381,20 +400,18 @@ tbody tr:hover { background: var(--panel-2); }
       <div class="chart-h"><canvas id="chartMonth"></canvas></div>
     </div>
     <div class="panel">
-      <h2>Zisk podle platformy</h2>
+      <h2>Zisk podle platformy prodeje</h2>
       <div class="chart-h"><canvas id="chartPlatform"></canvas></div>
     </div>
   </div>
-
-  <!-- KATEGORIE -->
-  <div class="grid-cat">
+  <div class="grid-2">
     <div class="panel">
-      <h2>Zisk podle kategorie</h2>
-      <div class="chart-h"><canvas id="chartCat"></canvas></div>
+      <h2>Zisk podle značky</h2>
+      <div class="chart-h"><canvas id="chartBrand"></canvas></div>
     </div>
     <div class="panel">
-      <h2>Kde se prodává</h2>
-      <div class="chart-h"><canvas id="chartSold"></canvas></div>
+      <h2>Odkud nakupuji</h2>
+      <div class="chart-h"><canvas id="chartSource"></canvas></div>
     </div>
   </div>
 
@@ -434,7 +451,7 @@ tbody tr:hover { background: var(--panel-2); }
     <div class="tbl-wrap" style="border:none">
       <table>
         <thead>
-          <tr><th>Hra / položka</th><th>Skladem</th><th>Prodáno</th><th class="hide-m">⌀ nákup</th><th>⌀ prodej</th></tr>
+          <tr><th>Telefon</th><th>Skladem</th><th>Prodáno</th><th class="hide-m">⌀ nákup</th><th>⌀ prodej</th></tr>
         </thead>
         <tbody id="dupes-body"></tbody>
       </table>
@@ -443,12 +460,16 @@ tbody tr:hover { background: var(--panel-2); }
 
   <!-- FILTERS -->
   <div class="toolbar">
-    <input type="text" id="search" placeholder="Hledat název…" oninput="render()">
+    <input type="text" id="search" placeholder="Hledat značku / model…" oninput="render()">
     <div class="chips" id="status-chips">
       <span class="chip active" data-s="vse" onclick="setFilter(this)">Vše</span>
       <span class="chip" data-s="skladem" onclick="setFilter(this)">Skladem</span>
       <span class="chip" data-s="vystaveno" onclick="setFilter(this)">Vystaveno</span>
       <span class="chip" data-s="prodano" onclick="setFilter(this)">Prodáno</span>
+    </div>
+    <div class="chips" id="lock-chips">
+      <span class="chip active" data-l="vse" onclick="setLockFilter(this)">Vše</span>
+      <span class="chip" data-l="uzamcene" onclick="setLockFilter(this)">🔒 Jen uzamčené</span>
     </div>
   </div>
 
@@ -457,11 +478,10 @@ tbody tr:hover { background: var(--panel-2); }
     <table>
       <thead>
         <tr>
-          <th>Položka</th>
-          <th class="hide-m">Prodáno na</th>
+          <th>Telefon</th>
+          <th class="hide-m">Koupeno na</th>
           <th>Nákup</th>
           <th>Prodej</th>
-          <th class="hide-m">Náklady</th>
           <th>Zisk</th>
           <th class="hide-m">Dní</th>
           <th>Stav</th>
@@ -480,47 +500,75 @@ tbody tr:hover { background: var(--panel-2); }
 <!-- ITEM MODAL -->
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
-    <h3 id="modal-title">Přidat položku</h3>
+    <h3 id="modal-title">Přidat telefon</h3>
     <input type="hidden" id="f-id">
-    <div class="fgrp">
-      <label>Název</label>
-      <input type="text" id="f-name" placeholder="např. Xbox 360 Slim 250GB">
-    </div>
     <div class="frow">
       <div class="fgrp">
-        <label>Kategorie</label>
-        <select id="f-cat">
-          <option value="Konzole">Konzole</option>
-          <option value="Hra">Hra</option>
-          <option value="Telefon">Telefon</option>
-          <option value="Příslušenství">Příslušenství</option>
+        <label>Značka</label>
+        <select id="f-brand">
+          <option value="Apple">Apple</option>
+          <option value="Samsung">Samsung</option>
+          <option value="Xiaomi">Xiaomi</option>
+          <option value="Google">Google</option>
+          <option value="Huawei">Huawei</option>
+          <option value="OnePlus">OnePlus</option>
+          <option value="Jiná">Jiná</option>
         </select>
       </div>
       <div class="fgrp">
-        <label>Stav zboží</label>
-        <select id="f-cond">
-          <option value="Použité">Použité</option>
-          <option value="Nové">Nové</option>
+        <label>Model</label>
+        <input type="text" id="f-model" placeholder="např. iPhone 12">
+      </div>
+    </div>
+    <div class="frow3">
+      <div class="fgrp">
+        <label>Úložiště</label>
+        <input type="text" id="f-storage" placeholder="např. 128 GB">
+      </div>
+      <div class="fgrp">
+        <label>Barva</label>
+        <input type="text" id="f-color" placeholder="např. černá">
+      </div>
+      <div class="fgrp">
+        <label>Baterie (%)</label>
+        <input type="number" id="f-batt" min="0" max="100" placeholder="100">
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Stav zámku</label>
+        <select id="f-lock">
+          <option value="Odemčený">Odemčený</option>
+          <option value="Apple ID (uzamčeno)">Apple ID (uzamčeno)</option>
+          <option value="Google FRP (uzamčeno)">Google FRP (uzamčeno)</option>
+          <option value="Síťový zámek">Síťový zámek (SIM lock)</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>Kvalita / stav</label>
+        <select id="f-grade">
+          <option value="Jako nový">Jako nový</option>
+          <option value="Výborný">Výborný</option>
+          <option value="Dobrý">Dobrý</option>
+          <option value="Průměrný">Průměrný</option>
           <option value="Na ND">Na ND (díly)</option>
         </select>
       </div>
     </div>
     <div class="fgrp">
-      <label>Vystaveno na (klikni co platí)</label>
-      <div class="multi-platform" id="f-listed">
-        <span class="mp-chip" data-pl="Aukro" onclick="toggleMP(this)">Aukro</span>
-        <span class="mp-chip" data-pl="FB Marketplace" onclick="toggleMP(this)">FB Marketplace</span>
-        <span class="mp-chip" data-pl="Bazoš" onclick="toggleMP(this)">Bazoš</span>
-        <span class="mp-chip" data-pl="Sbazar" onclick="toggleMP(this)">Sbazar</span>
-        <span class="mp-chip" data-pl="Jiné" onclick="toggleMP(this)">Jiné</span>
+      <label>Doplňky v balení</label>
+      <div class="multi-platform" id="f-access">
+        <span class="mp-chip acc" data-a="Krabička" onclick="toggleChip(this)">Krabička</span>
+        <span class="mp-chip acc" data-a="Nabíječka" onclick="toggleChip(this)">Nabíječka</span>
+        <span class="mp-chip acc" data-a="Sluchátka/kabel" onclick="toggleChip(this)">Sluchátka/kabel</span>
+        <span class="mp-chip acc" data-a="Ochranné sklo/kryt" onclick="toggleChip(this)">Ochranné sklo/kryt</span>
       </div>
     </div>
     <div class="frow">
       <div class="fgrp">
-        <label>Prodáno na (počítá poplatek)</label>
-        <select id="f-soldon">
-          <option value="">— zatím neprodáno —</option>
-          <option value="Aukro">Aukro (7 %)</option>
+        <label>Koupeno na</label>
+        <select id="f-boughton">
+          <option value="Vinted">Vinted</option>
           <option value="FB Marketplace">FB Marketplace</option>
           <option value="Bazoš">Bazoš</option>
           <option value="Sbazar">Sbazar</option>
@@ -536,6 +584,29 @@ tbody tr:hover { background: var(--panel-2); }
         </select>
       </div>
     </div>
+    <div class="fgrp">
+      <label>Vystaveno na (klikni co platí)</label>
+      <div class="multi-platform" id="f-listed">
+        <span class="mp-chip" data-pl="Vinted" onclick="toggleChip(this)">Vinted</span>
+        <span class="mp-chip" data-pl="FB Marketplace" onclick="toggleChip(this)">FB Marketplace</span>
+        <span class="mp-chip" data-pl="Bazoš" onclick="toggleChip(this)">Bazoš</span>
+        <span class="mp-chip" data-pl="Sbazar" onclick="toggleChip(this)">Sbazar</span>
+        <span class="mp-chip" data-pl="Aukro" onclick="toggleChip(this)">Aukro</span>
+        <span class="mp-chip" data-pl="Jiné" onclick="toggleChip(this)">Jiné</span>
+      </div>
+    </div>
+    <div class="fgrp">
+      <label>Prodáno na (počítá poplatek)</label>
+      <select id="f-soldon">
+        <option value="">— zatím neprodáno —</option>
+        <option value="Vinted">Vinted</option>
+        <option value="FB Marketplace">FB Marketplace</option>
+        <option value="Bazoš">Bazoš</option>
+        <option value="Sbazar">Sbazar</option>
+        <option value="Aukro">Aukro (7 %)</option>
+        <option value="Jiné">Jiné</option>
+      </select>
+    </div>
     <div class="frow">
       <div class="fgrp">
         <label>Nákupní cena (Kč)</label>
@@ -549,12 +620,16 @@ tbody tr:hover { background: var(--panel-2); }
     <div class="frow">
       <div class="fgrp">
         <label>Náklady navíc (Kč)</label>
-        <input type="number" id="f-cost" placeholder="poštovné, oprava…">
+        <input type="number" id="f-cost" placeholder="oprava, nová baterie, sklo…">
       </div>
       <div class="fgrp">
-        <label>Odkaz na inzerát</label>
-        <input type="text" id="f-url" placeholder="https://…">
+        <label>IMEI / sériové číslo</label>
+        <input type="text" id="f-imei" placeholder="volitelné">
       </div>
+    </div>
+    <div class="fgrp">
+      <label>Odkaz na inzerát</label>
+      <input type="text" id="f-url" placeholder="https://…">
     </div>
     <div class="frow">
       <div class="fgrp">
@@ -568,7 +643,7 @@ tbody tr:hover { background: var(--panel-2); }
     </div>
     <div class="fgrp">
       <label>Poznámka</label>
-      <textarea id="f-note" placeholder="např. škrábanec na víku, bez krabice, čeká na čištění"></textarea>
+      <textarea id="f-note" placeholder="např. prasklé sklo, needituje se displej, čeká na test"></textarea>
     </div>
     <div class="calc-note" id="calc-note"></div>
     <div class="modal-foot">
@@ -586,7 +661,7 @@ tbody tr:hover { background: var(--panel-2); }
     <div class="frow">
       <div class="fgrp">
         <label>Název lotu</label>
-        <input type="text" id="lot-name" placeholder="např. Xbox 360 balík z Bazoše">
+        <input type="text" id="lot-name" placeholder="např. balík 5 telefonů z Vinted">
       </div>
       <div class="fgrp">
         <label>Celková nákupní cena (Kč)</label>
@@ -597,10 +672,10 @@ tbody tr:hover { background: var(--panel-2); }
       <div class="fgrp">
         <label>Odkud (platforma)</label>
         <select id="lot-source">
-          <option value="Bazoš">Bazoš</option>
+          <option value="Vinted">Vinted</option>
           <option value="FB Marketplace">FB Marketplace</option>
+          <option value="Bazoš">Bazoš</option>
           <option value="Sbazar">Sbazar</option>
-          <option value="Aukro">Aukro</option>
           <option value="Jiné">Jiné</option>
         </select>
       </div>
@@ -610,12 +685,12 @@ tbody tr:hover { background: var(--panel-2); }
       </div>
     </div>
 
-    <label style="font-size:12.5px;color:var(--txt-dim);display:block;margin:6px 0 8px">Kusy v lotu — u každého zadej odhad tržní hodnoty, nákup se rozpočítá podle poměru</label>
+    <label style="font-size:12.5px;color:var(--txt-dim);display:block;margin:6px 0 8px">Telefony v lotu — u každého zadej odhad tržní hodnoty, nákup se rozpočítá podle poměru</label>
     <div class="lb-head">
-      <span>Název kusu</span><span>Kategorie</span><span>Odhad (Kč)</span><span></span>
+      <span>Značka a model</span><span>Úložiště</span><span>Odhad (Kč)</span><span></span>
     </div>
     <div id="lb-rows"></div>
-    <button class="btn ghost sm" onclick="addLotRow()" style="margin-top:4px">+ Přidat kus</button>
+    <button class="btn ghost sm" onclick="addLotRow()" style="margin-top:4px">+ Přidat telefon</button>
 
     <div class="lb-summary" id="lb-summary"></div>
 
@@ -640,6 +715,8 @@ tbody tr:hover { background: var(--panel-2); }
 
 <script>
 // ---------- Firebase ----------
+// stejný Firebase projekt (stanek-kalendar) jako ostatní appky, ale samostatná kolekce
+// (data se nemíchají se starým resale dashboardem na konzole/hry)
 var firebaseConfig = {
   apiKey: "AIzaSyCtw2jh80pjX6DfGYnp9dooDS38h9Wmshg",
   authDomain: "stanek-kalendar.firebaseapp.com",
@@ -650,16 +727,16 @@ firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-// poplatky podle platformy (kde PRODÁNO)
-var FEES = { 'Aukro': 0.07, 'FB Marketplace': 0, 'Bazoš': 0, 'Sbazar': 0, 'Jiné': 0 };
+var FEES = { 'Vinted': 0, 'FB Marketplace': 0, 'Bazoš': 0, 'Sbazar': 0, 'Aukro': 0.07, 'Jiné': 0 };
 var STOCK_WARN = 30; // dní
 
 var items = [];
 var lots = [];
 var filterStatus = 'vse';
+var filterLock = 'vse';
 var period = 'vse';
 var uid = null;
-var chartMonth=null, chartPlatform=null, chartCat=null, chartSold=null;
+var chartMonth=null, chartPlatform=null, chartBrand=null, chartSource=null;
 
 // ---------- Auth ----------
 auth.onAuthStateChanged(function(user){
@@ -694,7 +771,7 @@ function chyba(code){
 function doLogout(){ auth.signOut(); }
 
 // ---------- Data ----------
-function docRef(){ return db.collection('resale').doc(uid); }
+function docRef(){ return db.collection('resale-phones').doc(uid); }
 function loadData(){
   docRef().onSnapshot(function(snap){
     var d = snap.data();
@@ -728,7 +805,8 @@ function fmt(n){
   if(n===null||n===undefined||isNaN(n)) return '—';
   return new Intl.NumberFormat('cs-CZ').format(Math.round(n)) + ' Kč';
 }
-// kontrola jestli datum spadá do vybraného období (podle data prodeje pro prodané)
+function displayName(it){ return ((it.brand||'')+' '+(it.model||'')).trim() || 'Bez názvu'; }
+function isLocked(it){ return !!it.lock && it.lock !== 'Odemčený'; }
 function inPeriod(dateStr){
   if(period==='vse') return true;
   if(!dateStr) return false;
@@ -754,18 +832,24 @@ function setFilter(el){
   filterStatus = el.getAttribute('data-s');
   render();
 }
+function setLockFilter(el){
+  document.querySelectorAll('#lock-chips .chip').forEach(function(c){ c.classList.remove('active','redchip'); });
+  el.classList.add('active');
+  filterLock = el.getAttribute('data-l');
+  if(filterLock==='uzamcene') el.classList.add('redchip');
+  render();
+}
 
 // ---------- Render ----------
 function render(){
   renderCards();
-  renderAlert();
+  renderAlerts();
   renderLots();
   renderDupes();
   renderTopFlop();
   renderTable();
   renderCharts();
 }
-// prodané v období
 function soldInPeriod(){
   return items.filter(function(i){ return i.status==='prodano' && profit(i)!==null && inPeriod(i.sold); });
 }
@@ -776,26 +860,38 @@ function renderCards(){
   var tiedUp = stockItems.reduce(function(s,i){ return s + (i.buy||0) + (i.cost||0); }, 0);
   var revenue = sold.reduce(function(s,i){ return s + (i.sell||0); }, 0);
   var margin = revenue ? Math.round(totalProfit / revenue * 100) : 0;
+  var withBatt = stockItems.filter(function(i){ return i.batt!==undefined && i.batt!==null && i.batt!==''; });
+  var avgBatt = withBatt.length ? Math.round(withBatt.reduce(function(s,i){ return s+(+i.batt); },0)/withBatt.length) : null;
   var periodLbl = {dnes:'dnes', '7':'za 7 dní', '30':'za 30 dní', rok:'letos', vse:'celkem'}[period];
   var html = '';
-  html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'green', sold.length + ' prodaných');
-  html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' položek');
+  html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'teal', sold.length + ' prodaných');
+  html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' telefonů');
   html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů '+periodLbl);
-  html += card('Celkem položek', items.length, '', stockItems.length + ' skladem');
+  html += card('⌀ baterie skladem', avgBatt===null?'—':avgBatt+' %', 'violet', withBatt.length + ' se známou baterií');
+  html += card('Celkem telefonů', items.length, '', stockItems.length + ' skladem');
   document.getElementById('cards').innerHTML = html;
 }
 function card(k,v,cls,sub){
   return '<div class="card"><div class="k">'+k+'</div><div class="v '+(cls||'')+'">'+v+'</div><div class="sub2">'+sub+'</div></div>';
 }
-function renderAlert(){
+function renderAlerts(){
   var lezaky = items.filter(function(i){ return i.status!=='prodano' && daysInStock(i)!==null && daysInStock(i)>=STOCK_WARN; });
   lezaky.sort(function(a,b){ return daysInStock(b)-daysInStock(a); });
   var box = document.getElementById('alert-box');
-  if(lezaky.length===0){ box.style.display='none'; return; }
-  box.style.display='block';
-  document.getElementById('alert-list').innerHTML = lezaky.map(function(i){
-    return '<li><span class="nm">'+esc(i.name)+' <span class="meta" style="color:var(--txt-faint);font-size:12px">('+fmt(i.buy)+' v zásobě)</span></span><span class="dd">'+daysInStock(i)+' dní — zlevni nebo přebal</span></li>';
-  }).join('');
+  if(lezaky.length===0){ box.style.display='none'; } else {
+    box.style.display='block';
+    document.getElementById('alert-list').innerHTML = lezaky.map(function(i){
+      return '<li><span class="nm">'+esc(displayName(i))+' <span class="meta" style="color:var(--txt-faint);font-size:12px">('+fmt(i.buy)+' v zásobě)</span></span><span class="dd">'+daysInStock(i)+' dní — zlevni nebo přebal</span></li>';
+    }).join('');
+  }
+  var locked = items.filter(function(i){ return i.status!=='prodano' && isLocked(i); });
+  var lbox = document.getElementById('lock-box');
+  if(locked.length===0){ lbox.style.display='none'; } else {
+    lbox.style.display='block';
+    document.getElementById('lock-list').innerHTML = locked.map(function(i){
+      return '<li><span class="nm">'+esc(displayName(i))+'</span><span class="dd violet">'+esc(i.lock)+'</span></li>';
+    }).join('');
+  }
 }
 function renderTopFlop(){
   var sold = soldInPeriod();
@@ -803,7 +899,7 @@ function renderTopFlop(){
   var tl = sold.slice(0,5).map(function(i){
     var p = profit(i);
     var roi = i.buy ? Math.round(p / i.buy * 100) : 0;
-    return '<li><span class="nm">'+esc(i.name)+'<div class="meta">ROI '+roi+' %</div></span><span class="val profit-pos">'+fmt(p)+'</span></li>';
+    return '<li><span class="nm">'+esc(displayName(i))+'<div class="meta">ROI '+roi+' %</div></span><span class="val profit-pos">'+fmt(p)+'</span></li>';
   }).join('');
   document.getElementById('top-list').innerHTML = tl || '<li class="meta">Zatím nic prodaného</li>';
 
@@ -811,22 +907,31 @@ function renderTopFlop(){
   stock.sort(function(a,b){ return daysInStock(b) - daysInStock(a); });
   var fl = stock.slice(0,5).map(function(i){
     var d = daysInStock(i);
-    return '<li><span class="nm">'+esc(i.name)+'<div class="meta">'+fmt(i.buy)+' v zásobě</div></span><span class="val '+daysCls(d)+'">'+d+' dní</span></li>';
+    return '<li><span class="nm">'+esc(displayName(i))+'<div class="meta">'+fmt(i.buy)+' v zásobě</div></span><span class="val '+daysCls(d)+'">'+d+' dní</span></li>';
   }).join('');
-  document.getElementById('flop-list').innerHTML = fl || '<li class="meta">Žádné položky skladem</li>';
+  document.getElementById('flop-list').innerHTML = fl || '<li class="meta">Žádné telefony skladem</li>';
 }
 function daysCls(d){ if(d>=60) return 'days-bad'; if(d>=STOCK_WARN) return 'days-warn'; return 'days-ok'; }
+
+function battBadge(pct){
+  if(pct===undefined||pct===null||pct==='') return '';
+  var p = +pct;
+  var color = p>=85 ? 'var(--teal)' : (p>=60 ? 'var(--amber)' : 'var(--red)');
+  var w = Math.max(4,Math.min(100,p));
+  return '<span class="batt-badge"><span class="batt"><span class="batt-fill" style="width:'+w+'%;background:'+color+'"></span></span><span class="batt-pct" style="color:'+color+'">'+p+'%</span></span>';
+}
 
 function renderTable(){
   var q = document.getElementById('search').value.toLowerCase();
   var list = items.filter(function(i){
     if(filterStatus!=='vse' && i.status!==filterStatus) return false;
-    if(q && i.name.toLowerCase().indexOf(q)<0) return false;
+    if(filterLock==='uzamcene' && !isLocked(i)) return false;
+    if(q && displayName(i).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
   list.sort(function(a,b){ return (b.bought||'').localeCompare(a.bought||''); });
   if(list.length===0){
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="9"><div class="empty">Žádné položky. Přidej první přes tlačítko nahoře nebo rychlým zadáním.</div></td></tr>';
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="8"><div class="empty">Žádné telefony. Přidej první přes tlačítko nahoře nebo rychlým zadáním.</div></td></tr>';
     return;
   }
   var html = list.map(function(i){
@@ -836,15 +941,17 @@ function renderTable(){
     var dCell = d===null ? '—' : '<span class="'+daysCls(d)+'">'+d+'</span>';
     var statusLbl = {skladem:'Skladem', vystaveno:'Vystaveno', prodano:'Prodáno'}[i.status];
     var link = i.url ? ' <a class="link-ico" href="'+esc(i.url)+'" target="_blank" rel="noopener">↗</a>' : '';
-    var cond = i.cond ? '<span class="cond-tag">'+esc(i.cond)+'</span>' : '';
+    var grade = i.grade ? '<span class="grade-tag">'+esc(i.grade)+'</span>' : '';
+    var lockTag = isLocked(i) ? '<span class="lock-badge">🔒 '+esc(i.lock)+'</span>' : (i.lock ? '<span class="lock-badge ok">Odemčený</span>' : '');
     var note = i.note ? '<div class="tnote">'+esc(i.note)+'</div>' : '';
-    var soldOn = i.soldOn || (i.listed && i.listed.length ? i.listed.join(', ') : '—');
+    var details = [i.storage, i.color].filter(Boolean).map(esc).join(' · ');
     return '<tr>'+
-      '<td><div class="tname">'+esc(i.name)+link+' '+cond+'</div><div class="tcat">'+esc(i.cat||'')+'</div>'+note+'</td>'+
-      '<td class="hide-m">'+esc(soldOn)+'</td>'+
+      '<td><div class="tname">'+esc(displayName(i))+link+'</div>'+
+        '<div class="ttags">'+(details?'<span class="grade-tag">'+details+'</span>':'')+grade+battBadge(i.batt)+lockTag+'</div>'+
+        note+'</td>'+
+      '<td class="hide-m">'+esc(i.boughtOn||'—')+'</td>'+
       '<td>'+fmt(i.buy)+'</td>'+
       '<td>'+(i.sell?fmt(i.sell):'—')+'</td>'+
-      '<td class="hide-m">'+(i.cost?fmt(i.cost):'—')+'</td>'+
       '<td>'+pCell+'</td>'+
       '<td class="hide-m">'+dCell+'</td>'+
       '<td><span class="badge '+i.status+'">'+statusLbl+'</span></td>'+
@@ -882,27 +989,30 @@ function renderYear(){
   var revenue = sold.reduce(function(s,i){ return s+(i.sell||0); },0);
   var prof = sold.reduce(function(s,i){ return s+(profit(i)||0); },0);
   var margin = revenue ? Math.round(prof/revenue*100) : 0;
-  // nejlepší měsíc
   var byMonth = {};
   sold.forEach(function(i){ var m=i.sold.slice(5,7); byMonth[m]=(byMonth[m]||0)+profit(i); });
   var best = Object.keys(byMonth).sort(function(a,b){ return byMonth[b]-byMonth[a]; })[0];
   var mNames = {'01':'leden','02':'únor','03':'březen','04':'duben','05':'květen','06':'červen','07':'červenec','08':'srpen','09':'září','10':'říjen','11':'listopad','12':'prosinec'};
   var bestLbl = best ? mNames[best]+' ('+fmt(byMonth[best])+')' : '—';
+  var byBrand = {};
+  sold.forEach(function(i){ var b=i.brand||'Jiná'; byBrand[b]=(byBrand[b]||0)+1; });
+  var topBrand = Object.keys(byBrand).sort(function(a,b){ return byBrand[b]-byBrand[a]; })[0];
+  var topBrandLbl = topBrand ? topBrand+' ('+byBrand[topBrand]+' ks)' : '—';
   var g = document.getElementById('year-grid');
   g.innerHTML =
     yc('Nakoupeno za', fmt(spent)) +
     yc('Prodáno za', fmt(revenue)) +
-    yc('Čistý zisk', fmt(prof), 'green') +
+    yc('Čistý zisk', fmt(prof), 'teal') +
     yc('Kusů prodáno', sold.length) +
     yc('Průměrná marže', margin+' %') +
-    yc('Nejlepší měsíc', bestLbl);
+    yc('Nejlepší měsíc', bestLbl) +
+    yc('Nejprodávanější značka', topBrandLbl);
 }
 function yc(k,v,cls){ return '<div class="year-cell"><div class="yk">'+k+'</div><div class="yv '+(cls||'')+'">'+v+'</div></div>'; }
 
 // ---------- Charts ----------
 function renderCharts(){
   var sold = items.filter(function(i){ return i.status==='prodano' && i.sold && profit(i)!==null && inPeriod(i.sold); });
-  // months
   var byMonth = {};
   sold.forEach(function(i){ var m=i.sold.slice(0,7); byMonth[m]=(byMonth[m]||0)+profit(i); });
   var months = Object.keys(byMonth).sort();
@@ -910,34 +1020,32 @@ function renderCharts(){
   if(chartMonth) chartMonth.destroy();
   chartMonth = new Chart(document.getElementById('chartMonth'), {
     type:'bar',
-    data:{ labels:mLabels, datasets:[{ data:months.map(function(m){return byMonth[m];}), backgroundColor:'#3ddc91', borderRadius:6 }] },
+    data:{ labels:mLabels, datasets:[{ data:months.map(function(m){return byMonth[m];}), backgroundColor:'#2dd4bf', borderRadius:6 }] },
     options: chartOpts()
   });
-  // platform (kde prodáno)
   var byPlat = {};
   sold.forEach(function(i){ var k=i.soldOn||'Jiné'; byPlat[k]=(byPlat[k]||0)+profit(i); });
   if(chartPlatform) chartPlatform.destroy();
   chartPlatform = new Chart(document.getElementById('chartPlatform'), {
     type:'doughnut',
-    data:{ labels:Object.keys(byPlat), datasets:[{ data:Object.values(byPlat), backgroundColor:['#3ddc91','#5aa9ff','#f5b14c','#a98bff','#f25c6e'], borderColor:'#161922', borderWidth:2 }] },
+    data:{ labels:Object.keys(byPlat), datasets:[{ data:Object.values(byPlat), backgroundColor:['#2dd4bf','#5b9cf6','#f2b84b','#9d7bff','#f2596b','#57637a'], borderColor:'#121822', borderWidth:2 }] },
     options: donutOpts()
   });
-  // kategorie
-  var byCat = {};
-  sold.forEach(function(i){ var k=i.cat||'Jiné'; byCat[k]=(byCat[k]||0)+profit(i); });
-  if(chartCat) chartCat.destroy();
-  chartCat = new Chart(document.getElementById('chartCat'), {
+  var byBrand = {};
+  sold.forEach(function(i){ var k=i.brand||'Jiná'; byBrand[k]=(byBrand[k]||0)+profit(i); });
+  if(chartBrand) chartBrand.destroy();
+  chartBrand = new Chart(document.getElementById('chartBrand'), {
     type:'bar',
-    data:{ labels:Object.keys(byCat), datasets:[{ data:Object.values(byCat), backgroundColor:'#a98bff', borderRadius:6 }] },
+    data:{ labels:Object.keys(byBrand), datasets:[{ data:Object.values(byBrand), backgroundColor:'#9d7bff', borderRadius:6 }] },
     options: chartOpts()
   });
-  // počet prodejů podle platformy
-  var cntPlat = {};
-  sold.forEach(function(i){ var k=i.soldOn||'Jiné'; cntPlat[k]=(cntPlat[k]||0)+1; });
-  if(chartSold) chartSold.destroy();
-  chartSold = new Chart(document.getElementById('chartSold'), {
+  var boughtAll = items.filter(function(i){ return inPeriod(i.bought); });
+  var cntSrc = {};
+  boughtAll.forEach(function(i){ var k=i.boughtOn||'Jiné'; cntSrc[k]=(cntSrc[k]||0)+1; });
+  if(chartSource) chartSource.destroy();
+  chartSource = new Chart(document.getElementById('chartSource'), {
     type:'doughnut',
-    data:{ labels:Object.keys(cntPlat), datasets:[{ data:Object.values(cntPlat), backgroundColor:['#5aa9ff','#3ddc91','#f5b14c','#a98bff','#f25c6e'], borderColor:'#161922', borderWidth:2 }] },
+    data:{ labels:Object.keys(cntSrc), datasets:[{ data:Object.values(cntSrc), backgroundColor:['#5b9cf6','#2dd4bf','#f2b84b','#9d7bff','#f2596b'], borderColor:'#121822', borderWidth:2 }] },
     options: donutOpts(true)
   });
 }
@@ -946,39 +1054,46 @@ function chartOpts(){
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(c){ return fmt(c.parsed.y); } } } },
     scales:{
-      x:{ grid:{ display:false }, ticks:{ color:'#5d6377', font:{ size:11 } } },
-      y:{ grid:{ color:'#20242f' }, ticks:{ color:'#5d6377', font:{ size:11 }, callback:function(v){ return v/1000+'k'; } } }
+      x:{ grid:{ display:false }, ticks:{ color:'#57637a', font:{ size:11 } } },
+      y:{ grid:{ color:'#1b2331' }, ticks:{ color:'#57637a', font:{ size:11 }, callback:function(v){ return v/1000+'k'; } } }
     }
   };
 }
 function donutOpts(count){
-  return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#9298ab', padding:14, font:{ size:12 } } },
+  return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#8b96ab', padding:14, font:{ size:12 } } },
     tooltip:{ callbacks:{ label:function(c){ return c.label+': '+(count? c.parsed+' ks' : fmt(c.parsed)); } } } } };
 }
 
 // ---------- Modal ----------
-function setMP(arr){
-  document.querySelectorAll('#f-listed .mp-chip').forEach(function(c){
-    c.classList.toggle('on', arr.indexOf(c.getAttribute('data-pl'))>=0);
+function toggleChip(el){ el.classList.toggle('on'); }
+function setChips(containerId, attr, arr){
+  document.querySelectorAll('#'+containerId+' .mp-chip').forEach(function(c){
+    c.classList.toggle('on', arr.indexOf(c.getAttribute(attr))>=0);
   });
 }
-function getMP(){
-  var out=[]; document.querySelectorAll('#f-listed .mp-chip.on').forEach(function(c){ out.push(c.getAttribute('data-pl')); }); return out;
+function getChips(containerId, attr){
+  var out=[]; document.querySelectorAll('#'+containerId+' .mp-chip.on').forEach(function(c){ out.push(c.getAttribute(attr)); }); return out;
 }
-function toggleMP(el){ el.classList.toggle('on'); }
 function openAdd(){
   pendingLotId=null;
-  document.getElementById('modal-title').textContent='Přidat položku';
+  document.getElementById('modal-title').textContent='Přidat telefon';
   document.getElementById('f-id').value='';
-  document.getElementById('f-name').value='';
-  document.getElementById('f-cat').value='Konzole';
-  document.getElementById('f-cond').value='Použité';
-  setMP([]);
+  document.getElementById('f-brand').value='Apple';
+  document.getElementById('f-model').value='';
+  document.getElementById('f-storage').value='';
+  document.getElementById('f-color').value='';
+  document.getElementById('f-batt').value='';
+  document.getElementById('f-lock').value='Odemčený';
+  document.getElementById('f-grade').value='Dobrý';
+  setChips('f-access','data-a',[]);
+  document.getElementById('f-boughton').value='Vinted';
+  setChips('f-listed','data-pl',[]);
   document.getElementById('f-soldon').value='';
   document.getElementById('f-status').value='skladem';
   document.getElementById('f-buy').value='';
   document.getElementById('f-sell').value='';
   document.getElementById('f-cost').value='';
+  document.getElementById('f-imei').value='';
   document.getElementById('f-url').value='';
   document.getElementById('f-bought').value=new Date().toISOString().slice(0,10);
   document.getElementById('f-sold').value='';
@@ -989,17 +1104,24 @@ function openAdd(){
 function openEdit(id){
   var it = items.find(function(i){ return i.id===id; });
   if(!it) return;
-  document.getElementById('modal-title').textContent='Upravit položku';
+  document.getElementById('modal-title').textContent='Upravit telefon';
   document.getElementById('f-id').value=it.id;
-  document.getElementById('f-name').value=it.name;
-  document.getElementById('f-cat').value=it.cat||'Konzole';
-  document.getElementById('f-cond').value=it.cond||'Použité';
-  setMP(it.listed||[]);
+  document.getElementById('f-brand').value=it.brand||'Apple';
+  document.getElementById('f-model').value=it.model||'';
+  document.getElementById('f-storage').value=it.storage||'';
+  document.getElementById('f-color').value=it.color||'';
+  document.getElementById('f-batt').value=it.batt!==undefined?it.batt:'';
+  document.getElementById('f-lock').value=it.lock||'Odemčený';
+  document.getElementById('f-grade').value=it.grade||'Dobrý';
+  setChips('f-access','data-a',it.access||[]);
+  document.getElementById('f-boughton').value=it.boughtOn||'Vinted';
+  setChips('f-listed','data-pl',it.listed||[]);
   document.getElementById('f-soldon').value=it.soldOn||'';
   document.getElementById('f-status').value=it.status;
   document.getElementById('f-buy').value=it.buy||'';
   document.getElementById('f-sell').value=it.sell||'';
   document.getElementById('f-cost').value=it.cost||'';
+  document.getElementById('f-imei').value=it.imei||'';
   document.getElementById('f-url').value=it.url||'';
   document.getElementById('f-bought').value=it.bought||'';
   document.getElementById('f-sold').value=it.sold||'';
@@ -1020,23 +1142,30 @@ function updateCalcNote(){
   var fee=(feePct&&sell)?Math.round(sell*feePct):0;
   if(!sell){ document.getElementById('calc-note').textContent=''; return; }
   var p=sell-buy-cost-fee;
-  document.getElementById('calc-note').innerHTML='Čistý zisk: <b style="color:'+(p>=0?'var(--green)':'var(--red)')+'">'+fmt(p)+'</b>'+(fee?' (po odečtení poplatku '+soldOn+' '+fmt(fee)+')':'');
+  document.getElementById('calc-note').innerHTML='Čistý zisk: <b style="color:'+(p>=0?'var(--teal)':'var(--red)')+'">'+fmt(p)+'</b>'+(fee?' (po odečtení poplatku '+soldOn+' '+fmt(fee)+')':'');
 }
 function saveItem(){
-  var name=document.getElementById('f-name').value.trim();
-  if(!name){ alert('Zadej název.'); return; }
+  var brand=document.getElementById('f-brand').value;
+  var model=document.getElementById('f-model').value.trim();
+  if(!model){ alert('Zadej model telefonu.'); return; }
   var id=document.getElementById('f-id').value;
   var obj={
     id: id || ('it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7)),
-    name:name,
-    cat:document.getElementById('f-cat').value,
-    cond:document.getElementById('f-cond').value,
-    listed:getMP(),
+    brand:brand, model:model,
+    storage:document.getElementById('f-storage').value.trim(),
+    color:document.getElementById('f-color').value.trim(),
+    batt:document.getElementById('f-batt').value===''?null:+document.getElementById('f-batt').value,
+    lock:document.getElementById('f-lock').value,
+    grade:document.getElementById('f-grade').value,
+    access:getChips('f-access','data-a'),
+    boughtOn:document.getElementById('f-boughton').value,
+    listed:getChips('f-listed','data-pl'),
     soldOn:document.getElementById('f-soldon').value,
     status:document.getElementById('f-status').value,
     buy:+document.getElementById('f-buy').value||0,
     sell:+document.getElementById('f-sell').value||0,
     cost:+document.getElementById('f-cost').value||0,
+    imei:document.getElementById('f-imei').value.trim(),
     url:document.getElementById('f-url').value.trim(),
     bought:document.getElementById('f-bought').value||'',
     sold:document.getElementById('f-sold').value||'',
@@ -1055,9 +1184,7 @@ function saveItem(){
 }
 
 // ---------- LOTY ----------
-// kusy patřící do lotu
 function lotItems(lotId){ return items.filter(function(i){ return i.lotId===lotId; }); }
-// přehled lotu
 function lotSummary(lot){
   var its = lotItems(lot.id);
   var sold = its.filter(function(i){ return i.status==='prodano'; });
@@ -1080,15 +1207,15 @@ function renderLots(){
   lots.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
   document.getElementById('lots-list').innerHTML = lots.map(function(lot){
     var s = lotSummary(lot);
-    var pColor = s.profit>=0 ? 'var(--green)' : 'var(--red)';
+    var pColor = s.profit>=0 ? 'var(--teal)' : 'var(--red)';
     var its = lotItems(lot.id);
     var rows = its.map(function(i){
       var stLbl = {skladem:'skladem',vystaveno:'vystaveno',prodano:'prodáno'}[i.status];
-      var stCol = i.status==='prodano'?'var(--green)':(i.status==='vystaveno'?'var(--amber)':'var(--blue)');
+      var stCol = i.status==='prodano'?'var(--teal)':(i.status==='vystaveno'?'var(--amber)':'var(--blue)');
       var buyLine = 'nákup '+fmt(i.buy);
       var sellLine = i.status==='prodano' ? ' → prodej '+fmt(i.sell) : '';
-      return '<div class="lot-item-row"><span class="lir-name">'+esc(i.name)+' <span style="color:var(--txt-faint);font-size:12px">('+buyLine+sellLine+')</span></span><span class="lir-status" style="color:'+stCol+'">'+stLbl+'</span></div>';
-    }).join('') || '<div style="font-size:13px;color:var(--txt-faint)">Žádné kusy — přidej je přes „Přidat položku" a přiřaď k lotu, nebo uprav lot.</div>';
+      return '<div class="lot-item-row"><span class="lir-name">'+esc(displayName(i))+' <span style="color:var(--txt-faint);font-size:12px">('+buyLine+sellLine+')</span></span><span class="lir-status" style="color:'+stCol+'">'+stLbl+'</span></div>';
+    }).join('') || '<div style="font-size:13px;color:var(--txt-faint)">Žádné kusy — přidej je přes „Přidat telefon" a přiřaď k lotu, nebo uprav lot.</div>';
     return '<div class="lot-card">'+
       '<div class="lot-top">'+
         '<div><div class="lot-name">'+esc(lot.name)+'</div>'+
@@ -1096,11 +1223,11 @@ function renderLots(){
         '<div class="lot-prof"><div class="lp-v" style="color:'+pColor+'">'+fmt(s.profit)+'</div><div class="lp-lbl">'+(s.recouped?'čistý zisk':'zatím')+'</div></div>'+
       '</div>'+
       '<div class="lot-bar-wrap"><div class="lot-bar" style="width:'+s.pct+'%"></div></div>'+
-      '<div class="lot-stats"><span>Rozprodáno <b>'+s.pct+'%</b></span><span><b>'+s.soldCount+'</b>/'+s.count+' kusů</span><span>Zpět z prodejů <b>'+fmt(s.revenue)+'</b></span>'+
+      '<div class="lot-stats"><span>Rozprodáno <b>'+s.pct+'%</b></span><span><b>'+s.soldCount+'</b>/'+s.count+' ks</span><span>Zpět z prodejů <b>'+fmt(s.revenue)+'</b></span>'+
         (s.recouped?'<span class="lot-recouped">✓ Náklad pokryt</span>':'<span>Zbývá pokrýt <b>'+fmt(Math.max(0,(lot.price||0)-s.revenue))+'</b></span>')+'</div>'+
       '<div class="lot-actions">'+
         '<button class="btn ghost sm" onclick="toggleLotItems(\''+lot.id+'\')">Zobrazit kusy ('+its.length+')</button>'+
-        '<button class="btn ghost sm" onclick="openAddToLot(\''+lot.id+'\')">+ Kus do lotu</button>'+
+        '<button class="btn ghost sm" onclick="openAddToLot(\''+lot.id+'\')">+ Telefon do lotu</button>'+
         '<button class="btn ghost sm" onclick="openLotEdit(\''+lot.id+'\')">✎ Upravit lot</button>'+
         '<button class="btn danger sm" onclick="confirmDelLot(\''+lot.id+'\')">Smazat</button>'+
       '</div>'+
@@ -1114,8 +1241,8 @@ function toggleLotItems(id){ document.getElementById('li-'+id).classList.toggle(
 function renderDupes(){
   var groups = {};
   items.forEach(function(i){
-    var key = i.name.trim().toLowerCase();
-    if(!groups[key]) groups[key] = { name:i.name, all:[], stock:0, sold:0, buySum:0, buyCnt:0, sellSum:0, sellCnt:0 };
+    var key = (displayName(i)+' '+(i.storage||'')).trim().toLowerCase();
+    if(!groups[key]) groups[key] = { name:displayName(i)+(i.storage?' ('+i.storage+')':''), all:[], stock:0, sold:0, buySum:0, buyCnt:0, sellSum:0, sellCnt:0 };
     var g = groups[key];
     g.all.push(i);
     if(i.status==='prodano'){ g.sold++; if(i.sell){ g.sellSum+=i.sell; g.sellCnt++; } }
@@ -1145,7 +1272,7 @@ function openLot(){
   document.getElementById('lot-id').value='';
   document.getElementById('lot-name').value='';
   document.getElementById('lot-price').value='';
-  document.getElementById('lot-source').value='Bazoš';
+  document.getElementById('lot-source').value='Vinted';
   document.getElementById('lot-date').value=new Date().toISOString().slice(0,10);
   lotRows=[ blankRow(), blankRow() ];
   drawLotRows();
@@ -1158,26 +1285,23 @@ function openLotEdit(id){
   document.getElementById('lot-id').value=lot.id;
   document.getElementById('lot-name').value=lot.name;
   document.getElementById('lot-price').value=lot.price||'';
-  document.getElementById('lot-source').value=lot.source||'Bazoš';
+  document.getElementById('lot-source').value=lot.source||'Vinted';
   document.getElementById('lot-date').value=lot.date||'';
-  // existující kusy do řádků (jen ty skladem/vystavené, aby šel upravit odhad; prodané needitujeme přes builder)
   var its=lotItems(lot.id);
-  lotRows = its.map(function(i){ return { itemId:i.id, name:i.name, cat:i.cat||'Konzole', est:i.est||i.buy||0, locked:(i.status==='prodano') }; });
+  lotRows = its.map(function(i){ return { itemId:i.id, name:displayName(i), storage:i.storage||'', est:i.est||i.buy||0, locked:(i.status==='prodano') }; });
   if(!lotRows.length) lotRows=[ blankRow() ];
   drawLotRows();
   document.getElementById('lot-bg').classList.add('show');
 }
-function blankRow(){ return { itemId:null, name:'', cat:'Konzole', est:'', locked:false }; }
+function blankRow(){ return { itemId:null, name:'', storage:'', est:'', locked:false }; }
 function addLotRow(){ lotRows.push(blankRow()); drawLotRows(); }
 function delLotRow(idx){ lotRows.splice(idx,1); if(!lotRows.length) lotRows=[blankRow()]; drawLotRows(); }
 function drawLotRows(){
-  var cats=['Konzole','Hra','Telefon','Příslušenství'];
   document.getElementById('lb-rows').innerHTML = lotRows.map(function(r,idx){
-    var opts=cats.map(function(c){ return '<option value="'+c+'"'+(r.cat===c?' selected':'')+'>'+c+'</option>'; }).join('');
     var lock = r.locked ? ' disabled title="prodaný kus, uprav ho v tabulce"' : '';
     return '<div class="lb-row">'+
-      '<input type="text" placeholder="název kusu" value="'+esc(r.name)+'" oninput="lotRows['+idx+'].name=this.value"'+lock+'>'+
-      '<select oninput="lotRows['+idx+'].cat=this.value"'+lock+'>'+opts+'</select>'+
+      '<input type="text" placeholder="např. iPhone 12" value="'+esc(r.name)+'" oninput="lotRows['+idx+'].name=this.value"'+lock+'>'+
+      '<input type="text" placeholder="128 GB" value="'+esc(r.storage)+'" oninput="lotRows['+idx+'].storage=this.value"'+lock+'>'+
       '<input type="number" placeholder="odhad" value="'+(r.est!==''?r.est:'')+'" oninput="lotRows['+idx+'].est=this.value;recalcLot()"'+lock+'>'+
       '<button class="lb-del" onclick="delLotRow('+idx+')"'+(r.locked?' disabled':'')+'>✕</button>'+
     '</div>';
@@ -1190,12 +1314,12 @@ function recalcLot(){
   var sum=document.getElementById('lb-summary');
   var filled=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; }).length;
   if(!price){ sum.innerHTML='<span class="lb-warn">Zadej celkovou cenu lotu nahoře.</span>'; return; }
-  if(!totalEst){ sum.innerHTML='<span class="lb-warn">Zadej odhad hodnoty aspoň u jednoho kusu.</span>'; return; }
+  if(!totalEst){ sum.innerHTML='<span class="lb-warn">Zadej odhad hodnoty aspoň u jednoho telefonu.</span>'; return; }
   var lines=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; }).map(function(r){
     var alloc=Math.round(price * (+r.est) / totalEst);
     return esc(r.name)+' → <b>'+fmt(alloc)+'</b>';
   }).join(' · ');
-  sum.innerHTML='Rozpočet nákupu ('+fmt(price)+' na '+filled+' kusů podle odhadu):<br>'+lines;
+  sum.innerHTML='Rozpočet nákupu ('+fmt(price)+' na '+filled+' ks podle odhadu):<br>'+lines;
 }
 function saveLot(){
   var name=document.getElementById('lot-name').value.trim();
@@ -1203,7 +1327,7 @@ function saveLot(){
   if(!name){ alert('Zadej název lotu.'); return; }
   if(!price){ alert('Zadej celkovou cenu lotu.'); return; }
   var valid=lotRows.filter(function(r){ return r.name.trim() && (+r.est||0)>0; });
-  if(!valid.length){ alert('Přidej aspoň jeden kus s odhadem hodnoty.'); return; }
+  if(!valid.length){ alert('Přidej aspoň jeden telefon s odhadem hodnoty.'); return; }
   var totalEst=valid.reduce(function(s,r){ return s+(+r.est); },0);
   var source=document.getElementById('lot-source').value;
   var date=document.getElementById('lot-date').value;
@@ -1213,16 +1337,19 @@ function saveLot(){
   var existingIdx=lots.findIndex(function(l){ return l.id===lotId; });
   if(existingIdx>=0) lots[existingIdx]=lot; else lots.push(lot);
 
-  // vytvoř / uprav kusy
   valid.forEach(function(r){
     var alloc=Math.round(price * (+r.est) / totalEst);
+    var parts = r.name.trim().split(' ');
+    var brandGuess = parts[0]||'Jiná';
+    var modelGuess = parts.slice(1).join(' ')||r.name.trim();
     if(r.itemId){
       var it=items.find(function(i){ return i.id===r.itemId; });
-      if(it){ it.name=r.name; it.cat=r.cat; it.est=+r.est; if(it.status!=='prodano'){ it.buy=alloc; } }
+      if(it){ it.brand=brandGuess; it.model=modelGuess; it.storage=r.storage; it.est=+r.est; if(it.status!=='prodano'){ it.buy=alloc; } }
     } else {
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        name:r.name, cat:r.cat, cond:'Použité', listed:[], soldOn:'',
-        buy:alloc, sell:0, cost:0, status:'skladem', url:'',
+        brand:brandGuess, model:modelGuess, storage:r.storage, color:'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        boughtOn:source, listed:[], soldOn:'',
+        buy:alloc, sell:0, cost:0, status:'skladem', imei:'', url:'',
         bought:date||new Date().toISOString().slice(0,10), sold:'', note:'',
         lotId:lotId, est:+r.est });
     }
@@ -1233,31 +1360,31 @@ function closeLot(){ document.getElementById('lot-bg').classList.remove('show');
 function confirmDelLot(id){
   var lot=lots.find(function(l){return l.id===id;});
   var cnt=lotItems(id).length;
-  showConfirm('Smazat lot?','Smazat lot „'+(lot?lot.name:'')+'“ i s '+cnt+' kusy? Nelze vrátit.',function(){
+  showConfirm('Smazat lot?','Smazat lot „'+(lot?lot.name:'')+'“ i s '+cnt+' telefony? Nelze vrátit.',function(){
     items=items.filter(function(i){ return i.lotId!==id; });
     lots=lots.filter(function(l){ return l.id!==id; });
     save(); initYearSelect(); render();
   });
 }
-// přidání jednotlivého kusu rovnou do lotu (otevře běžný item modal s předvyplněným lotem)
 function openAddToLot(lotId){
   openAdd();
   pendingLotId=lotId;
   var lot=lots.find(function(l){return l.id===lotId;});
-  document.getElementById('modal-title').textContent='Přidat kus do lotu: '+(lot?lot.name:'');
+  document.getElementById('modal-title').textContent='Přidat telefon do lotu: '+(lot?lot.name:'');
 }
 var pendingLotId=null;
 
 // ---------- Export CSV ----------
 function exportCSV(){
-  var head=['Nazev','Lot','Kategorie','Stav zbozi','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
+  var head=['Znacka','Model','Uloziste','Barva','Baterie %','Zamek','Kvalita','Lot','Koupeno na','Vystaveno na','Prodano na','Nakup','Prodej','Naklady','Poplatek','Cisty zisk','Stav','Dni skladem','IMEI','Datum nakupu','Datum prodeje','Odkaz','Poznamka'];
   var rows=items.map(function(i){
     var p=profit(i);
     var lot=i.lotId ? (lots.find(function(l){return l.id===i.lotId;})||{}).name||'' : '';
-    return [ i.name, lot, i.cat||'', i.cond||'', (i.listed||[]).join(' / '), i.soldOn||'',
+    return [ i.brand||'', i.model||'', i.storage||'', i.color||'', (i.batt!==undefined&&i.batt!==null?i.batt:''), i.lock||'', i.grade||'', lot,
+      i.boughtOn||'', (i.listed||[]).join(' / '), i.soldOn||'',
       i.buy||0, i.sell||0, i.cost||0, platformFee(i), (p===null?'':p),
       {skladem:'Skladem',vystaveno:'Vystaveno',prodano:'Prodano'}[i.status],
-      (daysInStock(i)===null?'':daysInStock(i)), i.bought||'', i.sold||'', i.url||'', (i.note||'').replace(/[\r\n]+/g,' ') ];
+      (daysInStock(i)===null?'':daysInStock(i)), i.imei||'', i.bought||'', i.sold||'', i.url||'', (i.note||'').replace(/[\r\n]+/g,' ') ];
   });
   var csv=[head].concat(rows).map(function(r){
     return r.map(function(c){ var s=(''+c).replace(/"/g,'""'); return '"'+s+'"'; }).join(';');
@@ -1265,7 +1392,7 @@ function exportCSV(){
   var blob=new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
   var a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='resale-export-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download='telefony-export-'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
 }
 
@@ -1281,12 +1408,12 @@ function closeConfirm(){ document.getElementById('confirm-bg').classList.remove(
 document.getElementById('confirm-ok').onclick=function(){ if(confirmAction) confirmAction(); closeConfirm(); };
 function confirmDel(id){
   var it=items.find(function(i){return i.id===id;});
-  showConfirm('Smazat položku?','Opravdu smazat „'+(it?it.name:'')+'“?',function(){
+  showConfirm('Smazat telefon?','Opravdu smazat „'+(it?displayName(it):'')+'“?',function(){
     items=items.filter(function(i){return i.id!==id;}); save(); initYearSelect(); render();
   });
 }
 function confirmWipe(){
-  showConfirm('Smazat vše?','Tímto smažeš všech '+items.length+' položek. Nelze vrátit zpět.',function(){
+  showConfirm('Smazat vše?','Tímto smažeš všech '+items.length+' telefonů. Nelze vrátit zpět.',function(){
     items=[]; save(); initYearSelect(); render();
   });
 }
@@ -1298,11 +1425,11 @@ function runAI(){
   var st=document.getElementById('ai-status');
   var btn=document.getElementById('ai-btn');
   st.style.color='var(--txt-dim)'; st.textContent='Zpracovávám…'; btn.disabled=true;
-  var sys='Jsi parser pro evidenci přeprodeje konzolí, her a telefonů. Z textu uživatele v češtině vrať POUZE validní JSON, žádný jiný text, žádné markdown. '+
-    'Pokud uživatel popisuje NÁKUP, vrať: {"action":"buy","items":[{"name":"...","cat":"Konzole|Hra|Telefon|Příslušenství","buy":CISLO}]}. '+
-    'Pokud popisuje PRODEJ, vrať: {"action":"sell","name":"...","sell":CISLO,"soldOn":"Aukro|FB Marketplace|Bazoš|Sbazar|Jiné"}. '+
-    'Pokud je to nákup balíku víc věcí za jednu cenu, rozděl cenu mezi položky podle odhadnuté tržní hodnoty. '+
-    'Když platforma u prodeje není zmíněná, použij "Aukro". Ceny jsou v Kč jako čísla bez měny.';
+  var sys='Jsi parser pro evidenci přeprodeje telefonů. Z textu uživatele v češtině vrať POUZE validní JSON, žádný jiný text, žádné markdown. '+
+    'Pokud uživatel popisuje NÁKUP, vrať: {"action":"buy","items":[{"brand":"Apple|Samsung|Xiaomi|Google|Huawei|OnePlus|Jiná","model":"...","storage":"...","color":"...","buy":CISLO}]}. Pole storage a color vyplň jen pokud jsou v textu zmíněné, jinak prázdný řetězec. '+
+    'Pokud popisuje PRODEJ, vrať: {"action":"sell","name":"znacka a model","sell":CISLO,"soldOn":"Vinted|FB Marketplace|Bazoš|Sbazar|Aukro|Jiné"}. '+
+    'Pokud je to nákup balíku víc telefonů za jednu cenu, rozděl cenu mezi položky podle odhadnuté tržní hodnoty. '+
+    'Když platforma u prodeje není zmíněná, použij "Vinted". Ceny jsou v Kč jako čísla bez měny.';
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST', headers:{'Content-Type':'application/json'},
     body:JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system:sys, messages:[{role:'user',content:txt}] })
@@ -1316,27 +1443,30 @@ function runAI(){
   });
 }
 function applyAI(p){
-  var st=document.getElementById('ai-status'); st.style.color='var(--green)';
+  var st=document.getElementById('ai-status'); st.style.color='var(--teal)';
   var today=new Date().toISOString().slice(0,10);
   if(p.action==='buy' && p.items){
     p.items.forEach(function(x){
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        name:x.name, cat:x.cat||'Konzole', cond:'Použité', listed:[], soldOn:'',
-        buy:+x.buy||0, sell:0, cost:0, status:'skladem', url:'', bought:today, sold:'', note:'' });
+        brand:x.brand||'Jiná', model:x.model||'', storage:x.storage||'', color:x.color||'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        boughtOn:'Vinted', listed:[], soldOn:'',
+        buy:+x.buy||0, sell:0, cost:0, status:'skladem', imei:'', url:'', bought:today, sold:'', note:'' });
     });
-    st.textContent='✓ Přidáno do skladu: '+p.items.map(function(x){return x.name;}).join(', ');
+    st.textContent='✓ Přidáno do skladu: '+p.items.map(function(x){return (x.brand||'')+' '+(x.model||'');}).join(', ');
     save(); initYearSelect(); render();
   } else if(p.action==='sell'){
     var match=items.filter(function(i){return i.status!=='prodano';})
-      .find(function(i){ return i.name.toLowerCase().indexOf((p.name||'').toLowerCase())>=0 || (p.name||'').toLowerCase().indexOf(i.name.toLowerCase())>=0; });
+      .find(function(i){ var nm=displayName(i).toLowerCase(); return nm.indexOf((p.name||'').toLowerCase())>=0 || (p.name||'').toLowerCase().indexOf(nm)>=0; });
     if(match){
-      match.sell=+p.sell||0; match.status='prodano'; match.sold=today; match.soldOn=p.soldOn||'Aukro';
-      st.textContent='✓ Označeno jako prodáno: '+match.name+' za '+fmt(match.sell);
+      match.sell=+p.sell||0; match.status='prodano'; match.sold=today; match.soldOn=p.soldOn||'Vinted';
+      st.textContent='✓ Označeno jako prodáno: '+displayName(match)+' za '+fmt(match.sell);
     } else {
+      var parts=(p.name||'').trim().split(' ');
       items.push({ id:'it_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-        name:p.name, cat:'Konzole', cond:'Použité', listed:[], soldOn:p.soldOn||'Aukro',
-        buy:0, sell:+p.sell||0, cost:0, status:'prodano', url:'', bought:'', sold:today, note:'' });
-      st.textContent='✓ Přidán prodej: '+p.name+' za '+fmt(+p.sell||0)+' (nákup neznámý, doplň ho)';
+        brand:parts[0]||'Jiná', model:parts.slice(1).join(' ')||p.name||'', storage:'', color:'', batt:null, lock:'Odemčený', grade:'Dobrý', access:[],
+        boughtOn:'Vinted', listed:[], soldOn:p.soldOn||'Vinted',
+        buy:0, sell:+p.sell||0, cost:0, status:'prodano', imei:'', url:'', bought:'', sold:today, note:'' });
+      st.textContent='✓ Přidán prodej: '+(p.name||'')+' za '+fmt(+p.sell||0)+' (nákup neznámý, doplň ho)';
     }
     save(); initYearSelect(); render();
   } else {

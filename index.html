@@ -838,14 +838,13 @@ function renderCards(){
   var tiedUp = stockItems.reduce(function(s,i){ return s + (i.buy||0) + (i.cost||0); }, 0);
   var revenue = sold.reduce(function(s,i){ return s + (i.sell||0); }, 0);
   var margin = revenue ? Math.round(totalProfit / revenue * 100) : 0;
-  var withBatt = stockItems.filter(function(i){ return i.batt!==undefined && i.batt!==null && i.batt!==''; });
-  var avgBatt = withBatt.length ? Math.round(withBatt.reduce(function(s,i){ return s+(+i.batt); },0)/withBatt.length) : null;
+  var totalValue = items.reduce(function(s,i){ return s+(i.buy||0)+(i.cost||0); },0);
   var periodLbl = {dnes:'dnes', '7':'za 7 dní', '30':'za 30 dní', rok:'letos', vse:'celkem'}[period];
   var html = '';
   html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'teal', sold.length + ' prodaných');
   html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' telefonů');
   html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů '+periodLbl);
-  html += card('⌀ baterie skladem', avgBatt===null?'—':avgBatt+' %', 'violet', withBatt.length + ' se známou baterií');
+  html += card('Celková hodnota', fmt(totalValue), 'violet', items.length + ' telefonů celkem');
   html += card('Celkem telefonů', items.length, '', stockItems.length + ' skladem');
   document.getElementById('cards').innerHTML = html;
 }

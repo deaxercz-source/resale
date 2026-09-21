@@ -20,9 +20,9 @@
   --panel-2: #f1f4f8;
   --line: #e2e7ee;
   --line-soft: #ebeef3;
-  --txt: #1a2233;
-  --txt-dim: #667085;
-  --txt-faint: #98a2b3;
+  --txt: #12172a;
+  --txt-dim: #47536b;
+  --txt-faint: #6c7791;
   --teal: #0d9488;
   --teal-deep: #0b7a70;
   --amber: #d97706;
@@ -80,12 +80,13 @@ body {
 /* ---- header ---- */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; margin-bottom: 22px; flex-wrap: wrap;
+  gap: 14px; margin-bottom: 26px; padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-soft); flex-wrap: wrap;
 }
 .brand { display: flex; align-items: center; gap: 13px; }
 .brand .mark { width: 42px; height: 42px; border-radius: 12px; font-size: 20px; }
 .brand h1 { font-size: 19px; letter-spacing: -.4px; }
-.brand .sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
+.brand .sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
 
 /* ---- shell / sidebar ---- */
 .shell { display: flex; min-height: 100vh; align-items: stretch; }
@@ -116,8 +117,8 @@ header {
 .sidebar-backdrop.show { display: block; }
 .content { flex: 1; min-width: 0; }
 .topbar-mobile { display: none; }
-.page-title { font-size: 19px; letter-spacing: -.4px; margin-bottom: 2px; }
-.page-sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
+.page-title { font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 3px; }
+.page-sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
 
 /* ---- more menu (header overflow) ---- */
 .more-menu {
@@ -144,13 +145,17 @@ header {
 .period-bar .chip {
   padding: 8px 15px; background: var(--panel); border: 1px solid var(--line);
   border-radius: 20px; font-size: 13px; color: var(--txt-dim); cursor: pointer; transition: .15s;
+  box-shadow: 0 1px 2px rgba(20,30,50,.04);
 }
+.period-bar .chip:hover { border-color: var(--violet); color: var(--txt); }
 .period-bar .chip.active { background: var(--violet); color: #ffffff; border-color: var(--violet); font-weight: 600; }
 
 /* ---- AI input ---- */
 .ai-box {
-  background: var(--panel); border: 1px solid var(--line);
+  background: linear-gradient(135deg, rgba(13,148,136,.05), rgba(124,58,237,.03)), var(--panel);
+  border: 1px solid rgba(13,148,136,.25);
   border-radius: 16px; padding: 16px 16px 14px; margin-bottom: 22px;
+  box-shadow: 0 1px 3px rgba(20,30,50,.05);
 }
 .ai-box .lbl { font-size: 12px; color: var(--txt-faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 9px; display:flex; align-items:center; gap:7px; }
 .ai-row { display: flex; gap: 10px; }
@@ -167,9 +172,21 @@ header {
 .cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 13px; margin-bottom: 22px; }
 .card {
   background: var(--panel); border: 1px solid var(--line);
-  border-radius: 16px; padding: 17px 18px; position: relative; overflow: hidden;
+  border-radius: 16px; padding: 18px 19px; position: relative; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(20,30,50,.05);
+  transition: box-shadow .15s ease, transform .15s ease;
 }
-.card .k { font-size: 12px; color: var(--txt-dim); margin-bottom: 8px; letter-spacing: .3px; }
+.card:hover { box-shadow: 0 8px 20px rgba(20,30,50,.09); transform: translateY(-1px); }
+.card .icon-badge {
+  width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 16px; margin-bottom: 13px;
+}
+.card .icon-badge.teal { background: rgba(13,148,136,.12); }
+.card .icon-badge.amber { background: rgba(217,119,6,.12); }
+.card .icon-badge.blue { background: rgba(37,99,235,.12); }
+.card .icon-badge.violet { background: rgba(124,58,237,.12); }
+.card .icon-badge.gray { background: var(--panel-2); }
+.card .k { font-size: 12px; color: var(--txt-dim); margin-bottom: 8px; letter-spacing: .3px; font-weight: 600; }
 .card .v { font-size: 24px; font-weight: 700; letter-spacing: -.6px; }
 .card .v.teal { color: var(--teal); }
 .card .v.amber { color: var(--amber); }
@@ -194,6 +211,7 @@ header {
 .panel {
   background: var(--panel); border: 1px solid var(--line);
   border-radius: 16px; padding: 18px;
+  box-shadow: 0 1px 3px rgba(20,30,50,.05);
 }
 .panel h2 { font-size: 15px; margin-bottom: 14px; font-weight: 700; letter-spacing: -.2px; }
 .chart-h { height: 230px; position: relative; }
@@ -233,7 +251,7 @@ header {
 }
 .chip.active { background: var(--teal); color: #ffffff; border-color: var(--teal); font-weight: 600; }
 
-.tbl-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.tbl-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(20,30,50,.05); }
 table { width: 100%; border-collapse: collapse; }
 th {
   text-align: left; padding: 13px 14px; font-size: 11.5px; color: var(--txt-faint);
@@ -932,15 +950,15 @@ function renderCards(){
   var totalValue = stockItems.reduce(function(s,i){ return s+(i.buy||0)+(i.cost||0); },0);
   var periodLbl = {dnes:'dnes', '7':'za 7 dní', '30':'za 30 dní', rok:'letos', vse:'celkem'}[period];
   var html = '';
-  html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'teal', sold.length + ' prodaných');
-  html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' telefonů');
-  html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů '+periodLbl);
-  html += card('Celková hodnota', fmt(totalValue), 'violet', stockItems.length + ' telefonů skladem');
-  html += card('Celkem telefonů', items.length, '', stockItems.length + ' skladem');
+  html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'teal', sold.length + ' prodaných', '💰');
+  html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' telefonů', '📦');
+  html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů '+periodLbl, '📊');
+  html += card('Celková hodnota', fmt(totalValue), 'violet', stockItems.length + ' telefonů skladem', '💎');
+  html += card('Celkem telefonů', items.length, '', stockItems.length + ' skladem', '📱');
   document.getElementById('cards').innerHTML = html;
 }
-function card(k,v,cls,sub){
-  return '<div class="card"><div class="k">'+k+'</div><div class="v '+(cls||'')+'">'+v+'</div><div class="sub2">'+sub+'</div></div>';
+function card(k,v,cls,sub,icon){
+  return '<div class="card"><div class="icon-badge '+(cls||'gray')+'">'+(icon||'')+'</div><div class="k">'+k+'</div><div class="v '+(cls||'')+'">'+v+'</div><div class="sub2">'+sub+'</div></div>';
 }
 function renderAlerts(){
   var lezaky = items.filter(function(i){ return i.status!=='prodano' && daysInStock(i)!==null && daysInStock(i)>=STOCK_WARN; });
@@ -1110,13 +1128,13 @@ function chartOpts(){
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(c){ return fmt(c.parsed.y); } } } },
     scales:{
-      x:{ grid:{ display:false }, ticks:{ color:'#98a2b3', font:{ size:11 } } },
-      y:{ grid:{ color:'#ebeef3' }, ticks:{ color:'#98a2b3', font:{ size:11 }, callback:function(v){ return v/1000+'k'; } } }
+      x:{ grid:{ display:false }, ticks:{ color:'#6c7791', font:{ size:11 } } },
+      y:{ grid:{ color:'#ebeef3' }, ticks:{ color:'#6c7791', font:{ size:11 }, callback:function(v){ return v/1000+'k'; } } }
     }
   };
 }
 function donutOpts(count){
-  return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#667085', padding:14, font:{ size:12 } } },
+  return { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#47536b', padding:14, font:{ size:12 } } },
     tooltip:{ callbacks:{ label:function(c){ return c.label+': '+(count? c.parsed+' ks' : fmt(c.parsed)); } } } } };
 }
 

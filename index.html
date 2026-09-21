@@ -58,12 +58,14 @@ body {
   border-radius: 20px; padding: 38px 32px; max-width: 380px; width: 100%;
   box-shadow: var(--shadow); text-align: center;
 }
-.login-card .mark {
-  width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 18px;
+.mark {
   background: linear-gradient(135deg, var(--teal), var(--teal-deep));
   display: flex; align-items: center; justify-content: center;
-  font-size: 26px; color: #04211d;
-  box-shadow: 0 0 34px rgba(45,212,191,.35);
+  color: #04211d; box-shadow: 0 0 26px rgba(45,212,191,.3);
+}
+.login-card .mark {
+  width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 18px;
+  font-size: 26px; box-shadow: 0 0 34px rgba(45,212,191,.35);
 }
 .login-card h1 { font-size: 21px; margin-bottom: 6px; letter-spacing: -.3px; }
 .login-card p { color: var(--txt-dim); font-size: 13.5px; margin-bottom: 24px; }
@@ -81,15 +83,51 @@ header {
   gap: 14px; margin-bottom: 22px; flex-wrap: wrap;
 }
 .brand { display: flex; align-items: center; gap: 13px; }
-.brand .mark {
-  width: 42px; height: 42px; border-radius: 12px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-deep));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; color: #04211d;
-  box-shadow: 0 0 26px rgba(45,212,191,.3);
-}
+.brand .mark { width: 42px; height: 42px; border-radius: 12px; font-size: 20px; }
 .brand h1 { font-size: 19px; letter-spacing: -.4px; }
 .brand .sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ---- shell / sidebar ---- */
+.shell { display: flex; min-height: 100vh; align-items: stretch; }
+.sidebar {
+  width: 228px; flex-shrink: 0; background: var(--panel); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 200;
+}
+.sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 22px 20px 16px; }
+.sidebar-brand .mark { width: 40px; height: 40px; border-radius: 11px; font-size: 18px; }
+.sidebar-brand h1 { font-size: 16.5px; letter-spacing: -.3px; }
+.sidebar-brand .sub { font-size: 10px; letter-spacing: 1.5px; }
+.sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 11px 13px; border-radius: 11px;
+  color: var(--txt-dim); font-size: 14px; font-weight: 600; cursor: pointer; user-select: none;
+}
+.nav-item:hover { background: var(--panel-2); color: var(--txt); }
+.nav-item.active { background: linear-gradient(135deg, rgba(45,212,191,.16), rgba(45,212,191,.04)); color: var(--teal); }
+.nav-item.soon { cursor: default; opacity: .55; }
+.nav-item.soon:hover { background: none; color: var(--txt-dim); }
+.nav-item .soon-tag {
+  margin-left: auto; font-size: 9.5px; background: var(--panel-2); border: 1px solid var(--line);
+  padding: 2px 7px; border-radius: 8px; color: var(--txt-faint); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.sidebar-foot { padding: 14px; border-top: 1px solid var(--line); }
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(4,6,10,.6); z-index: 150; }
+.sidebar-backdrop.show { display: block; }
+.content { flex: 1; min-width: 0; }
+.topbar-mobile { display: none; }
+.page-title { font-size: 19px; letter-spacing: -.4px; margin-bottom: 2px; }
+.page-sub { font-size: 11px; color: var(--txt-faint); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ---- more menu (header overflow) ---- */
+.more-menu {
+  display: none; position: absolute; right: 0; top: calc(100% + 6px);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 6px;
+  min-width: 175px; box-shadow: var(--shadow); z-index: 50; flex-direction: column; gap: 2px;
+}
+.more-menu.show { display: flex; }
+.more-menu a { padding: 9px 11px; border-radius: 8px; font-size: 13.5px; color: var(--txt); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.more-menu a:hover { background: var(--panel); }
 .btn {
   background: var(--teal); color: #04211d; border: none;
   padding: 11px 18px; border-radius: 11px; font-weight: 700;
@@ -320,6 +358,18 @@ tbody tr:hover { background: var(--panel-2); }
   .frow, .frow3 { grid-template-columns: 1fr; }
   .year-grid { grid-template-columns: 1fr 1fr; }
   th.hide-m, td.hide-m { display: none; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%);
+    transition: transform .22s ease; box-shadow: var(--shadow);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .topbar-mobile {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    border-bottom: 1px solid var(--line); background: var(--panel);
+    position: sticky; top: 0; z-index: 60;
+  }
+  .topbar-mobile .icon-btn { width: 36px; height: 36px; flex-shrink: 0; }
+  .topbar-mobile .topbar-brand { font-weight: 700; font-size: 15px; }
 }
 </style>
 </head>
@@ -339,21 +389,46 @@ tbody tr:hover { background: var(--panel-2); }
 </div>
 
 <!-- APP -->
-<div class="wrap" id="app" style="display:none">
-  <header>
-    <div class="brand">
+<div class="shell" id="app" style="display:none">
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
       <div class="mark">📱</div>
       <div>
-        <h1>Telefony</h1>
-        <div class="sub">Nákup · Prodej · Zisk</div>
+        <h1>Deaxer</h1>
+        <div class="sub">Resale</div>
       </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active">📱 Telefony</a>
+      <a class="nav-item soon">🎮 Hry <span class="soon-tag">brzy</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="btn ghost sm" style="width:100%;justify-content:center" onclick="doLogout()">Odhlásit</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topbar-mobile">
+      <button class="icon-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-brand">📱 Telefony</div>
+    </div>
+    <div class="wrap">
+  <header>
+    <div>
+      <div class="page-title">Telefony</div>
+      <div class="page-sub">Nákup · Prodej · Zisk</div>
     </div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
       <span id="save-indicator" style="font-size:12.5px;display:none"></span>
       <button class="btn" onclick="openAdd()">+ Přidat telefon</button>
-      <button class="btn ghost sm" onclick="openLot()">📦 Přidat lot</button>
-      <button class="btn ghost sm" onclick="exportCSV()">↓ Export</button>
-      <button class="btn ghost sm" onclick="doLogout()">Odhlásit</button>
+      <div style="position:relative">
+        <button class="btn ghost sm" onclick="toggleMoreMenu()">⋯</button>
+        <div class="more-menu" id="more-menu">
+          <a onclick="closeMoreMenu();openLot()">📦 Přidat lot</a>
+          <a onclick="closeMoreMenu();exportCSV()">↓ Export CSV</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -484,6 +559,8 @@ tbody tr:hover { background: var(--panel-2); }
   <div style="text-align:center;margin-top:18px">
     <button class="btn danger sm" onclick="confirmWipe()">Smazat všechna data</button>
   </div>
+    </div>
+  </main>
 </div>
 
 <!-- ITEM MODAL -->
@@ -733,6 +810,20 @@ function chyba(code){
   return 'Chyba přihlášení: ' + code;
 }
 function doLogout(){ auth.signOut(); }
+
+// ---------- UI shell (sidebar / header menu) ----------
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-backdrop').classList.toggle('show');
+}
+function toggleMoreMenu(){ document.getElementById('more-menu').classList.toggle('show'); }
+function closeMoreMenu(){ document.getElementById('more-menu').classList.remove('show'); }
+document.addEventListener('click', function(e){
+  var mm = document.getElementById('more-menu');
+  if(mm && mm.classList.contains('show') && !e.target.closest('.more-menu') && e.target.getAttribute('onclick')!=='toggleMoreMenu()'){
+    mm.classList.remove('show');
+  }
+});
 
 // ---------- Data ----------
 function docRef(){ return db.collection('resale-phones').doc(uid); }

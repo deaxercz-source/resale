@@ -947,13 +947,14 @@ function renderCards(){
   var tiedUp = stockItems.reduce(function(s,i){ return s + (i.buy||0) + (i.cost||0); }, 0);
   var revenue = sold.reduce(function(s,i){ return s + (i.sell||0); }, 0);
   var margin = revenue ? Math.round(totalProfit / revenue * 100) : 0;
-  var totalValue = stockItems.reduce(function(s,i){ return s+(i.buy||0)+(i.cost||0); },0);
+  var soldAll = items.filter(function(i){ return i.status==='prodano'; });
+  var totalSellValue = soldAll.reduce(function(s,i){ return s+(i.sell||0); },0);
   var periodLbl = {dnes:'dnes', '7':'za 7 dní', '30':'za 30 dní', rok:'letos', vse:'celkem'}[period];
   var html = '';
   html += card('Čistý zisk ('+periodLbl+')', fmt(totalProfit), 'teal', sold.length + ' prodaných', '💰');
   html += card('Vázáno ve skladu', fmt(tiedUp), 'amber', stockItems.length + ' telefonů', '📦');
   html += card('Průměrná marže', margin + ' %', 'blue', 'z prodejů '+periodLbl, '📊');
-  html += card('Celková hodnota', fmt(totalValue), 'violet', stockItems.length + ' telefonů skladem', '💎');
+  html += card('Celková prodejní hodnota', fmt(totalSellValue), 'violet', soldAll.length + ' telefonů prodáno', '💎');
   html += card('Celkem telefonů', items.length, '', stockItems.length + ' skladem', '📱');
   document.getElementById('cards').innerHTML = html;
 }

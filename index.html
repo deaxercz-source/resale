@@ -784,7 +784,7 @@ auth.onAuthStateChanged(function(user){
   if(user){
     uid = user.uid;
     document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
+    document.getElementById('app').style.display = 'flex';
     loadData();
   } else {
     document.getElementById('login-screen').style.display = 'flex';

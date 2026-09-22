@@ -77,6 +77,24 @@ body {
 .login-card input:focus { outline: none; border-color: var(--teal); }
 .login-card .err { color: var(--red); font-size: 13px; min-height: 18px; margin-bottom: 8px; }
 
+/* ---- hero greeting + recap ---- */
+.hero-greet { margin-bottom: 16px; }
+.hero-title { font-size: 25px; font-weight: 800; letter-spacing: -.6px; margin-bottom: 3px; }
+.hero-date { font-size: 13px; color: var(--txt-dim); text-transform: capitalize; }
+.recap-box {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: linear-gradient(135deg, rgba(13,148,136,.07), rgba(124,58,237,.04)), var(--panel);
+  border: 1px solid rgba(13,148,136,.22); border-radius: 16px;
+  padding: 17px 20px; margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(20,30,50,.05);
+}
+.recap-box .recap-icon {
+  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+  background: rgba(13,148,136,.14); display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.recap-box .recap-text { font-size: 14.5px; line-height: 1.55; color: var(--txt); padding-top: 4px; }
+.recap-box .recap-text b { color: var(--teal); font-weight: 800; }
+
 /* ---- header ---- */
 header {
   display: flex; align-items: center; justify-content: space-between;
@@ -432,6 +450,15 @@ tbody tr:hover { background: var(--panel-2); }
       <div class="topbar-brand">📱 Telefony</div>
     </div>
     <div class="wrap">
+  <div class="hero-greet">
+    <div class="hero-title" id="greeting-title">Dobrý den, Jozefe 👋</div>
+    <div class="hero-date" id="greeting-date"></div>
+  </div>
+  <div class="recap-box" id="recap-box">
+    <div class="recap-icon">📈</div>
+    <div class="recap-text">Načítám shrnutí…</div>
+  </div>
+
   <header>
     <div>
       <div class="page-title">Telefony</div>
@@ -803,6 +830,7 @@ auth.onAuthStateChanged(function(user){
     uid = user.uid;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
+    renderGreeting();
     loadData();
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -930,6 +958,7 @@ function setFilter(el){
 // ---------- Render ----------
 function render(){
   renderCards();
+  renderRecap();
   renderAlerts();
   renderLots();
   renderDupes();
@@ -939,6 +968,38 @@ function render(){
 }
 function soldInPeriod(){
   return items.filter(function(i){ return i.status==='prodano' && profit(i)!==null && inPeriod(i.sold); });
+}
+function renderGreeting(){
+  var now = new Date();
+  var hour = now.getHours();
+  var greet = hour<11 ? 'Dobré ráno' : (hour<18 ? 'Dobrý den' : 'Dobrý večer');
+  var elT = document.getElementById('greeting-title');
+  if(elT) elT.textContent = greet+', Jozefe 👋';
+  var days=['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'];
+  var months=['ledna','února','března','dubna','května','června','července','srpna','září','října','listopadu','prosince'];
+  var elD = document.getElementById('greeting-date');
+  if(elD) elD.textContent = days[now.getDay()]+', '+now.getDate()+'. '+months[now.getMonth()]+' '+now.getFullYear();
+}
+function renderRecap(){
+  var box = document.getElementById('recap-box');
+  if(!box) return;
+  var now = new Date();
+  var ym = now.toISOString().slice(0,7);
+  var monthSold = items.filter(function(i){ return i.status==='prodano' && i.sold && i.sold.slice(0,7)===ym && profit(i)!==null; });
+  if(monthSold.length===0){
+    box.innerHTML = '<div class="recap-icon">👋</div><div class="recap-text">Tento měsíc zatím nemáš žádný prodej v evidenci. Jakmile něco prodáš, uvidíš tu rychlý přehled.</div>';
+    return;
+  }
+  var monthProfit = monthSold.reduce(function(s,i){ return s+(profit(i)||0); },0);
+  var monthRevenue = monthSold.reduce(function(s,i){ return s+(i.sell||0); },0);
+  var monthMargin = monthRevenue ? Math.round(monthProfit/monthRevenue*100) : 0;
+  var platCount = {};
+  monthSold.forEach(function(i){ var k=i.soldOn||'Jiné'; platCount[k]=(platCount[k]||0)+1; });
+  var topPlat = Object.keys(platCount).sort(function(a,b){ return platCount[b]-platCount[a]; })[0];
+  var kus = monthSold.length===1 ? 'telefon' : (monthSold.length<5 ? 'telefony' : 'telefonů');
+  var txt = 'Tento měsíc jsi prodal <b>'+monthSold.length+' '+kus+'</b> a vydělal čistého <b>'+fmt(monthProfit)+'</b>, průměrná marže <b>'+monthMargin+' %</b>.'+
+    (topPlat ? ' Nejvíc se ti daří na <b>'+esc(topPlat)+'</b>.' : '');
+  box.innerHTML = '<div class="recap-icon">📈</div><div class="recap-text">'+txt+'</div>';
 }
 function renderCards(){
   var sold = soldInPeriod();

@@ -1067,7 +1067,14 @@ function renderTable(){
     if(q && displayName(i).toLowerCase().indexOf(q)<0) return false;
     return true;
   });
-  list.sort(function(a,b){ return (b.bought||'').localeCompare(a.bought||''); });
+  list.sort(function(a,b){
+    var aSold = a.status==='prodano' ? 1 : 0;
+    var bSold = b.status==='prodano' ? 1 : 0;
+    if(aSold !== bSold) return aSold - bSold;
+    var aDate = a.status==='prodano' ? (a.sold||'') : (a.bought||'');
+    var bDate = b.status==='prodano' ? (b.sold||'') : (b.bought||'');
+    return bDate.localeCompare(aDate);
+  });
   if(list.length===0){
     document.getElementById('tbody').innerHTML = '<tr><td colspan="8"><div class="empty">Žádné telefony. Přidej první přes tlačítko nahoře nebo rychlým zadáním.</div></td></tr>';
     return;

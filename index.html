@@ -680,6 +680,7 @@ tbody tr:hover { background: var(--panel-2); }
         <select id="f-boughton">
           <option value="Vinted">Vinted</option>
           <option value="FB Marketplace">FB Marketplace</option>
+          <option value="FB Nikol">FB Nikol</option>
           <option value="Bazoš">Bazoš</option>
           <option value="Sbazar">Sbazar</option>
           <option value="Jiné">Jiné</option>
@@ -708,6 +709,7 @@ tbody tr:hover { background: var(--panel-2); }
         <div class="multi-platform" id="f-listed">
           <span class="mp-chip" data-pl="Vinted" onclick="toggleChip(this)">Vinted</span>
           <span class="mp-chip" data-pl="FB Marketplace" onclick="toggleChip(this)">FB Marketplace</span>
+          <span class="mp-chip" data-pl="FB Nikol" onclick="toggleChip(this)">FB Nikol</span>
           <span class="mp-chip" data-pl="Bazoš" onclick="toggleChip(this)">Bazoš</span>
           <span class="mp-chip" data-pl="Sbazar" onclick="toggleChip(this)">Sbazar</span>
           <span class="mp-chip" data-pl="Aukro" onclick="toggleChip(this)">Aukro</span>
@@ -729,6 +731,7 @@ tbody tr:hover { background: var(--panel-2); }
             <option value="">— zatím neprodáno —</option>
             <option value="Vinted">Vinted</option>
             <option value="FB Marketplace">FB Marketplace</option>
+            <option value="FB Nikol">FB Nikol</option>
             <option value="Bazoš">Bazoš</option>
             <option value="Sbazar">Sbazar</option>
             <option value="Aukro">Aukro (7 %)</option>
@@ -780,6 +783,7 @@ tbody tr:hover { background: var(--panel-2); }
         <select id="lot-source">
           <option value="Vinted">Vinted</option>
           <option value="FB Marketplace">FB Marketplace</option>
+          <option value="FB Nikol">FB Nikol</option>
           <option value="Bazoš">Bazoš</option>
           <option value="Sbazar">Sbazar</option>
           <option value="Jiné">Jiné</option>
@@ -833,7 +837,7 @@ firebase.initializeApp(firebaseConfig);
 var auth = firebase.auth();
 var db = firebase.firestore();
 
-var FEES = { 'Vinted': 0, 'FB Marketplace': 0, 'Bazoš': 0, 'Sbazar': 0, 'Aukro': 0.07, 'Jiné': 0 };
+var FEES = { 'Vinted': 0, 'FB Marketplace': 0, 'FB Nikol': 0, 'Bazoš': 0, 'Sbazar': 0, 'Aukro': 0.07, 'Jiné': 0 };
 var STOCK_WARN = 30; // dní
 
 var items = [];
@@ -1591,7 +1595,7 @@ function runAI(){
   st.style.color='var(--txt-dim)'; st.textContent='Zpracovávám…'; btn.disabled=true;
   var sys='Jsi parser pro evidenci přeprodeje telefonů. Z textu uživatele v češtině vrať POUZE validní JSON, žádný jiný text, žádné markdown. '+
     'Pokud uživatel popisuje NÁKUP, vrať: {"action":"buy","items":[{"brand":"Apple|Samsung|Xiaomi|Google|Huawei|OnePlus|Jiná","model":"...","storage":"...","color":"...","buy":CISLO}]}. Pole storage a color vyplň jen pokud jsou v textu zmíněné, jinak prázdný řetězec. '+
-    'Pokud popisuje PRODEJ, vrať: {"action":"sell","name":"znacka a model","sell":CISLO,"soldOn":"Vinted|FB Marketplace|Bazoš|Sbazar|Aukro|Jiné"}. '+
+    'Pokud popisuje PRODEJ, vrať: {"action":"sell","name":"znacka a model","sell":CISLO,"soldOn":"Vinted|FB Marketplace|FB Nikol|Bazoš|Sbazar|Aukro|Jiné"}. '+
     'Pokud je to nákup balíku víc telefonů za jednu cenu, rozděl cenu mezi položky podle odhadnuté tržní hodnoty. '+
     'Když platforma u prodeje není zmíněná, použij "Vinted". Ceny jsou v Kč jako čísla bez měny.';
   fetch('https://api.anthropic.com/v1/messages',{

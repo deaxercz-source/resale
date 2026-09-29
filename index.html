@@ -326,6 +326,11 @@ tbody tr:hover { background: var(--panel-2); }
   max-height: 92vh; overflow-y: auto;
 }
 .modal h3 { font-size: 18px; margin-bottom: 18px; }
+.modal-section-title {
+  font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--txt-faint); margin: 22px 0 12px; padding-top: 16px; border-top: 1px solid var(--line-soft);
+}
+.modal-section-title.first { margin-top: 0; padding-top: 0; border-top: none; }
 .fgrp { margin-bottom: 14px; }
 .fgrp label { display: block; font-size: 12.5px; color: var(--txt-dim); margin-bottom: 6px; }
 .fgrp input, .fgrp select, .fgrp textarea {
@@ -613,6 +618,8 @@ tbody tr:hover { background: var(--panel-2); }
   <div class="modal">
     <h3 id="modal-title">Přidat telefon</h3>
     <input type="hidden" id="f-id">
+
+    <div class="modal-section-title first">Telefon</div>
     <div class="frow">
       <div class="fgrp">
         <label>Značka</label>
@@ -645,16 +652,28 @@ tbody tr:hover { background: var(--panel-2); }
         <input type="number" id="f-batt" min="0" max="100" placeholder="100">
       </div>
     </div>
-    <div class="fgrp">
-      <label>Kvalita / stav</label>
-      <select id="f-grade">
-        <option value="Jako nový">Jako nový</option>
-        <option value="Výborný">Výborný</option>
-        <option value="Dobrý">Dobrý</option>
-        <option value="Průměrný">Průměrný</option>
-        <option value="Na ND">Na ND (díly)</option>
-      </select>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Kvalita / stav</label>
+        <select id="f-grade">
+          <option value="Jako nový">Jako nový</option>
+          <option value="Výborný">Výborný</option>
+          <option value="Dobrý">Dobrý</option>
+          <option value="Průměrný">Průměrný</option>
+          <option value="Na ND">Na ND (díly)</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>Stav</label>
+        <select id="f-status" onchange="updateModalSections()">
+          <option value="skladem">Skladem</option>
+          <option value="vystaveno">Vystaveno</option>
+          <option value="prodano">Prodáno</option>
+        </select>
+      </div>
     </div>
+
+    <div class="modal-section-title">Nákup</div>
     <div class="frow">
       <div class="fgrp">
         <label>Koupeno na</label>
@@ -667,36 +686,9 @@ tbody tr:hover { background: var(--panel-2); }
         </select>
       </div>
       <div class="fgrp">
-        <label>Stav</label>
-        <select id="f-status">
-          <option value="skladem">Skladem</option>
-          <option value="vystaveno">Vystaveno</option>
-          <option value="prodano">Prodáno</option>
-        </select>
+        <label>Datum nákupu</label>
+        <input type="date" id="f-bought">
       </div>
-    </div>
-    <div class="fgrp">
-      <label>Vystaveno na (klikni co platí)</label>
-      <div class="multi-platform" id="f-listed">
-        <span class="mp-chip" data-pl="Vinted" onclick="toggleChip(this)">Vinted</span>
-        <span class="mp-chip" data-pl="FB Marketplace" onclick="toggleChip(this)">FB Marketplace</span>
-        <span class="mp-chip" data-pl="Bazoš" onclick="toggleChip(this)">Bazoš</span>
-        <span class="mp-chip" data-pl="Sbazar" onclick="toggleChip(this)">Sbazar</span>
-        <span class="mp-chip" data-pl="Aukro" onclick="toggleChip(this)">Aukro</span>
-        <span class="mp-chip" data-pl="Jiné" onclick="toggleChip(this)">Jiné</span>
-      </div>
-    </div>
-    <div class="fgrp">
-      <label>Prodáno na (počítá poplatek)</label>
-      <select id="f-soldon">
-        <option value="">— zatím neprodáno —</option>
-        <option value="Vinted">Vinted</option>
-        <option value="FB Marketplace">FB Marketplace</option>
-        <option value="Bazoš">Bazoš</option>
-        <option value="Sbazar">Sbazar</option>
-        <option value="Aukro">Aukro (7 %)</option>
-        <option value="Jiné">Jiné</option>
-      </select>
     </div>
     <div class="frow">
       <div class="fgrp">
@@ -704,35 +696,62 @@ tbody tr:hover { background: var(--panel-2); }
         <input type="number" id="f-buy" placeholder="0">
       </div>
       <div class="fgrp">
-        <label>Prodejní cena (Kč)</label>
-        <input type="number" id="f-sell" placeholder="0">
+        <label>Náklady navíc (Kč)</label>
+        <input type="number" id="f-cost" placeholder="oprava, sklo…">
       </div>
     </div>
-    <div class="frow">
+
+    <div id="listed-section">
+      <div class="modal-section-title">Vystaveno na</div>
       <div class="fgrp">
-        <label>Náklady navíc (Kč)</label>
-        <input type="number" id="f-cost" placeholder="oprava, nová baterie, sklo…">
+        <label>Klikni, kde je inzerát aktivní</label>
+        <div class="multi-platform" id="f-listed">
+          <span class="mp-chip" data-pl="Vinted" onclick="toggleChip(this)">Vinted</span>
+          <span class="mp-chip" data-pl="FB Marketplace" onclick="toggleChip(this)">FB Marketplace</span>
+          <span class="mp-chip" data-pl="Bazoš" onclick="toggleChip(this)">Bazoš</span>
+          <span class="mp-chip" data-pl="Sbazar" onclick="toggleChip(this)">Sbazar</span>
+          <span class="mp-chip" data-pl="Aukro" onclick="toggleChip(this)">Aukro</span>
+          <span class="mp-chip" data-pl="Jiné" onclick="toggleChip(this)">Jiné</span>
+        </div>
       </div>
       <div class="fgrp">
         <label>Odkaz na inzerát</label>
         <input type="text" id="f-url" placeholder="https://…">
       </div>
     </div>
-    <div class="frow">
-      <div class="fgrp">
-        <label>Datum nákupu</label>
-        <input type="date" id="f-bought">
+
+    <div id="sell-section">
+      <div class="modal-section-title">Prodej</div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>Prodáno na (počítá poplatek)</label>
+          <select id="f-soldon">
+            <option value="">— zatím neprodáno —</option>
+            <option value="Vinted">Vinted</option>
+            <option value="FB Marketplace">FB Marketplace</option>
+            <option value="Bazoš">Bazoš</option>
+            <option value="Sbazar">Sbazar</option>
+            <option value="Aukro">Aukro (7 %)</option>
+            <option value="Jiné">Jiné</option>
+          </select>
+        </div>
+        <div class="fgrp">
+          <label>Datum prodeje</label>
+          <input type="date" id="f-sold">
+        </div>
       </div>
       <div class="fgrp">
-        <label>Datum prodeje</label>
-        <input type="date" id="f-sold">
+        <label>Prodejní cena (Kč)</label>
+        <input type="number" id="f-sell" placeholder="0">
       </div>
+      <div class="calc-note" id="calc-note"></div>
     </div>
+
+    <div class="modal-section-title">Poznámka</div>
     <div class="fgrp">
-      <label>Poznámka</label>
       <textarea id="f-note" placeholder="např. prasklé sklo, needituje se displej, čeká na test"></textarea>
     </div>
-    <div class="calc-note" id="calc-note"></div>
+
     <div class="modal-foot">
       <button class="btn ghost" onclick="closeModal()">Zrušit</button>
       <button class="btn" onclick="saveItem()">Uložit</button>
@@ -1208,6 +1227,11 @@ function donutOpts(count){
 
 // ---------- Modal ----------
 function toggleChip(el){ el.classList.toggle('on'); }
+function updateModalSections(){
+  var status=document.getElementById('f-status').value;
+  document.getElementById('listed-section').style.display = status==='skladem' ? 'none' : '';
+  document.getElementById('sell-section').style.display = status==='prodano' ? '' : 'none';
+}
 function setChips(containerId, attr, arr){
   document.querySelectorAll('#'+containerId+' .mp-chip').forEach(function(c){
     c.classList.toggle('on', arr.indexOf(c.getAttribute(attr))>=0);
@@ -1238,6 +1262,7 @@ function openAdd(){
   document.getElementById('f-sold').value='';
   document.getElementById('f-note').value='';
   updateCalcNote();
+  updateModalSections();
   document.getElementById('modal-bg').classList.add('show');
 }
 function openEdit(id){
@@ -1263,6 +1288,7 @@ function openEdit(id){
   document.getElementById('f-sold').value=it.sold||'';
   document.getElementById('f-note').value=it.note||'';
   updateCalcNote();
+  updateModalSections();
   document.getElementById('modal-bg').classList.add('show');
 }
 function closeModal(){ document.getElementById('modal-bg').classList.remove('show'); }

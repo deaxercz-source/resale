@@ -441,8 +441,9 @@ tbody tr:hover { background: var(--panel-2); }
       </div>
     </div>
     <nav class="sidebar-nav">
-      <a class="nav-item active">📱 Telefony</a>
-      <a class="nav-item soon">🎮 Hry <span class="soon-tag">brzy</span></a>
+      <a class="nav-item active" id="nav-telefony" onclick="switchPage('telefony')">📱 Telefony</a>
+      <a class="nav-item" id="nav-ovladace" onclick="switchPage('ovladace')">🎮 Ovladače</a>
+      <a class="nav-item soon">🕹️ Hry <span class="soon-tag">brzy</span></a>
     </nav>
     <div class="sidebar-foot">
       <button class="btn ghost sm" style="width:100%;justify-content:center" onclick="doLogout()">Odhlásit</button>
@@ -452,9 +453,9 @@ tbody tr:hover { background: var(--panel-2); }
   <main class="content">
     <div class="topbar-mobile">
       <button class="icon-btn" onclick="toggleSidebar()">☰</button>
-      <div class="topbar-brand">📱 Telefony</div>
+      <div class="topbar-brand" id="topbar-title">📱 Telefony</div>
     </div>
-    <div class="wrap">
+    <div class="wrap" id="page-telefony">
   <div class="hero-greet">
     <div class="hero-title" id="greeting-title">Dobrý den, Jozefe 👋</div>
     <div class="hero-date" id="greeting-date"></div>
@@ -509,43 +510,6 @@ tbody tr:hover { background: var(--panel-2); }
   <div class="alert-box" id="alert-box" style="display:none">
     <div class="ah">⚠ Ležáky — skladem přes 30 dní</div>
     <ul class="alert-list" id="alert-list"></ul>
-  </div>
-
-  <!-- OVLADAČE -->
-  <div class="panel" id="controllers-panel" style="margin-bottom:22px">
-    <div class="year-head">
-      <h2 style="margin:0">🎮 Ovladače (PS4)</h2>
-      <span style="font-size:12px;color:var(--txt-faint)" id="ctrl-sub"></span>
-    </div>
-    <div class="frow">
-      <div class="fgrp">
-        <label>Naskladněno (ks)</label>
-        <input type="number" id="ctrl-units" min="0" oninput="updateControllerBatch()">
-      </div>
-      <div class="fgrp">
-        <label>Celková nákupní cena (Kč)</label>
-        <input type="number" id="ctrl-cost" min="0" oninput="updateControllerBatch()">
-      </div>
-    </div>
-    <div class="lot-bar-wrap"><div class="lot-bar" id="ctrl-bar" style="width:0%"></div></div>
-    <div class="lot-stats" id="ctrl-stats"></div>
-    <div class="frow" style="margin-top:14px">
-      <div class="fgrp">
-        <label>Prodejní cena (Kč)</label>
-        <input type="number" id="ctrl-price" min="0" placeholder="např. 250">
-      </div>
-      <div class="fgrp">
-        <label>Prodáno na</label>
-        <select id="ctrl-platform">
-          <option value="Aukro">Aukro (7 %)</option>
-          <option value="FB Marketplace">FB Marketplace</option>
-          <option value="FB Nikol">FB Nikol</option>
-          <option value="Bazoš">Bazoš</option>
-        </select>
-      </div>
-    </div>
-    <button class="btn" style="width:100%;justify-content:center" onclick="sellController()">✓ Prodán další kus</button>
-    <div id="ctrl-log" style="margin-top:14px"></div>
   </div>
 
   <!-- CHARTS -->
@@ -646,6 +610,52 @@ tbody tr:hover { background: var(--panel-2); }
   <div style="text-align:center;margin-top:18px">
     <button class="btn danger sm" onclick="confirmWipe()">Smazat všechna data</button>
   </div>
+    </div>
+
+    <!-- PAGE: OVLADAČE -->
+    <div class="wrap" id="page-ovladace" style="display:none">
+      <header>
+        <div>
+          <div class="page-title">Ovladače</div>
+          <div class="page-sub">Hromadná zásoba · rychlý prodej</div>
+        </div>
+      </header>
+
+      <div class="panel" id="controllers-panel">
+        <div class="year-head">
+          <h2 style="margin:0">🎮 Ovladače (PS4)</h2>
+          <span style="font-size:12px;color:var(--txt-faint)" id="ctrl-sub"></span>
+        </div>
+        <div class="frow">
+          <div class="fgrp">
+            <label>Naskladněno (ks)</label>
+            <input type="number" id="ctrl-units" min="0" oninput="updateControllerBatch()">
+          </div>
+          <div class="fgrp">
+            <label>Celková nákupní cena (Kč)</label>
+            <input type="number" id="ctrl-cost" min="0" oninput="updateControllerBatch()">
+          </div>
+        </div>
+        <div class="lot-bar-wrap"><div class="lot-bar" id="ctrl-bar" style="width:0%"></div></div>
+        <div class="lot-stats" id="ctrl-stats"></div>
+        <div class="frow" style="margin-top:14px">
+          <div class="fgrp">
+            <label>Prodejní cena (Kč)</label>
+            <input type="number" id="ctrl-price" min="0" placeholder="např. 250">
+          </div>
+          <div class="fgrp">
+            <label>Prodáno na</label>
+            <select id="ctrl-platform">
+              <option value="Aukro">Aukro (7 %)</option>
+              <option value="FB Marketplace">FB Marketplace</option>
+              <option value="FB Nikol">FB Nikol</option>
+              <option value="Bazoš">Bazoš</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" style="width:100%;justify-content:center" onclick="sellController()">✓ Prodán další kus</button>
+        <div id="ctrl-log" style="margin-top:14px"></div>
+      </div>
     </div>
   </main>
 </div>
@@ -925,6 +935,16 @@ function toggleSidebar(){
 }
 function toggleMoreMenu(){ document.getElementById('more-menu').classList.toggle('show'); }
 function closeMoreMenu(){ document.getElementById('more-menu').classList.remove('show'); }
+function switchPage(page){
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var nav = document.getElementById('nav-'+page);
+  if(nav) nav.classList.add('active');
+  document.getElementById('page-telefony').style.display = page==='telefony' ? '' : 'none';
+  document.getElementById('page-ovladace').style.display = page==='ovladace' ? '' : 'none';
+  document.getElementById('topbar-title').textContent = page==='telefony' ? '📱 Telefony' : '🎮 Ovladače';
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('show');
+}
 document.addEventListener('click', function(e){
   var mm = document.getElementById('more-menu');
   if(mm && mm.classList.contains('show') && !e.target.closest('.more-menu') && e.target.getAttribute('onclick')!=='toggleMoreMenu()'){

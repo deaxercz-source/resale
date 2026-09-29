@@ -511,6 +511,43 @@ tbody tr:hover { background: var(--panel-2); }
     <ul class="alert-list" id="alert-list"></ul>
   </div>
 
+  <!-- OVLADAČE -->
+  <div class="panel" id="controllers-panel" style="margin-bottom:22px">
+    <div class="year-head">
+      <h2 style="margin:0">🎮 Ovladače (PS4)</h2>
+      <span style="font-size:12px;color:var(--txt-faint)" id="ctrl-sub"></span>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Naskladněno (ks)</label>
+        <input type="number" id="ctrl-units" min="0" oninput="updateControllerBatch()">
+      </div>
+      <div class="fgrp">
+        <label>Celková nákupní cena (Kč)</label>
+        <input type="number" id="ctrl-cost" min="0" oninput="updateControllerBatch()">
+      </div>
+    </div>
+    <div class="lot-bar-wrap"><div class="lot-bar" id="ctrl-bar" style="width:0%"></div></div>
+    <div class="lot-stats" id="ctrl-stats"></div>
+    <div class="frow" style="margin-top:14px">
+      <div class="fgrp">
+        <label>Prodejní cena (Kč)</label>
+        <input type="number" id="ctrl-price" min="0" placeholder="např. 250">
+      </div>
+      <div class="fgrp">
+        <label>Prodáno na</label>
+        <select id="ctrl-platform">
+          <option value="Aukro">Aukro (7 %)</option>
+          <option value="FB Marketplace">FB Marketplace</option>
+          <option value="FB Nikol">FB Nikol</option>
+          <option value="Bazoš">Bazoš</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" style="width:100%;justify-content:center" onclick="sellController()">✓ Prodán další kus</button>
+    <div id="ctrl-log" style="margin-top:14px"></div>
+  </div>
+
   <!-- CHARTS -->
   <div class="grid-2">
     <div class="panel">
@@ -842,6 +879,7 @@ var STOCK_WARN = 30; // dní
 
 var items = [];
 var lots = [];
+var controllers = { totalUnits: 200, totalCost: 35000, sales: [] };
 var filterStatus = 'vse';
 var period = 'vse';
 var uid = null;
@@ -901,6 +939,7 @@ function loadData(){
     var d = snap.data();
     items = (d && d.items) ? d.items : [];
     lots = (d && d.lots) ? d.lots : [];
+    controllers = (d && d.controllers) ? d.controllers : { totalUnits: 200, totalCost: 35000, sales: [] };
     initYearSelect();
     render();
   }, function(e){
@@ -920,7 +959,8 @@ function save(){
     // Firestore odmítá pole s hodnotou undefined (např. "est" u telefonů mimo lot) — tímhle se jich zbavíme
     var cleanItems = JSON.parse(JSON.stringify(items));
     var cleanLots = JSON.parse(JSON.stringify(lots));
-    return docRef().set({ items: cleanItems, lots: cleanLots }, { merge: true }).then(function(){
+    var cleanControllers = JSON.parse(JSON.stringify(controllers));
+    return docRef().set({ items: cleanItems, lots: cleanLots, controllers: cleanControllers }, { merge: true }).then(function(){
       showSaveStatus('✓ Uloženo', 'var(--teal)', false);
     }).catch(function(e){
       console.error('save err', e);
@@ -983,11 +1023,59 @@ function render(){
   renderCards();
   renderRecap();
   renderAlerts();
+  renderControllers();
   renderLots();
   renderDupes();
   renderTopFlop();
   renderTable();
   renderCharts();
+}
+// ---------- Ovladače (jednoduchý hromadný sklad) ----------
+function ctrlRevenue(){ return controllers.sales.reduce(function(s,x){ return s+(x.price||0); },0); }
+function ctrlFees(){ return controllers.sales.reduce(function(s,x){ return s+Math.round((x.price||0)*(FEES[x.platform]||0)); },0); }
+function ctrlNet(){ return ctrlRevenue() - ctrlFees(); }
+function renderControllers(){
+  var unitsInput = document.getElementById('ctrl-units');
+  if(!unitsInput) return;
+  if(document.activeElement!==unitsInput) unitsInput.value = controllers.totalUnits;
+  var costInput = document.getElementById('ctrl-cost');
+  if(document.activeElement!==costInput) costInput.value = controllers.totalCost;
+  var sold = controllers.sales.length;
+  var left = Math.max(0, controllers.totalUnits - sold);
+  var pct = controllers.totalUnits ? Math.min(100, Math.round(sold/controllers.totalUnits*100)) : 0;
+  document.getElementById('ctrl-bar').style.width = pct+'%';
+  document.getElementById('ctrl-sub').textContent = sold+' / '+controllers.totalUnits+' prodáno';
+  var net = ctrlNet();
+  var profit = net - controllers.totalCost;
+  var perUnit = controllers.totalUnits ? Math.round(controllers.totalCost/controllers.totalUnits) : 0;
+  document.getElementById('ctrl-stats').innerHTML =
+    '<span>Skladem: <b>'+left+' ks</b></span>'+
+    '<span>Cena/ks: <b>'+fmt(perUnit)+'</b></span>'+
+    '<span>Vráceno z nákladů: <b>'+fmt(Math.min(net, controllers.totalCost))+' / '+fmt(controllers.totalCost)+'</b></span>'+
+    '<span class="'+(profit>=0?'profit-pos':'profit-neg')+'">Čistý zisk: '+fmt(profit)+'</span>';
+  var log = controllers.sales.slice().reverse().slice(0,8);
+  document.getElementById('ctrl-log').innerHTML = log.length ? log.map(function(s){
+    return '<div class="lot-item-row"><span class="lir-name">'+esc(s.platform)+' · '+fmt(s.price)+'</span>'+
+      '<span class="lir-status" style="color:var(--txt-faint)">'+esc(s.date||'')+'</span>'+
+      '<button class="icon-btn del" style="width:24px;height:24px;font-size:11px" onclick="removeControllerSale(\''+s.id+'\')">✕</button></div>';
+  }).join('') : '<div style="font-size:13px;color:var(--txt-faint)">Zatím žádný prodej.</div>';
+}
+function updateControllerBatch(){
+  controllers.totalUnits = +document.getElementById('ctrl-units').value || 0;
+  controllers.totalCost = +document.getElementById('ctrl-cost').value || 0;
+  save(); renderControllers();
+}
+function sellController(){
+  var price = +document.getElementById('ctrl-price').value;
+  if(!price){ alert('Zadej prodejní cenu.'); return; }
+  var platform = document.getElementById('ctrl-platform').value;
+  controllers.sales.push({ id:'c_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), price:price, platform:platform, date:new Date().toISOString().slice(0,10) });
+  document.getElementById('ctrl-price').value='';
+  save(); renderControllers();
+}
+function removeControllerSale(id){
+  controllers.sales = controllers.sales.filter(function(s){ return s.id!==id; });
+  save(); renderControllers();
 }
 function soldInPeriod(){
   return items.filter(function(i){ return i.status==='prodano' && profit(i)!==null && inPeriod(i.sold); });

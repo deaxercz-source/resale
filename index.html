@@ -443,7 +443,7 @@ tbody tr:hover { background: var(--panel-2); }
     <nav class="sidebar-nav">
       <a class="nav-item active" id="nav-telefony" onclick="switchPage('telefony')">📱 Telefony</a>
       <a class="nav-item" id="nav-ovladace" onclick="switchPage('ovladace')">🎮 Ovladače</a>
-      <a class="nav-item soon">🕹️ Hry <span class="soon-tag">brzy</span></a>
+      <a class="nav-item" id="nav-hry" onclick="switchPage('hry')">🕹️ Hry</a>
     </nav>
     <div class="sidebar-foot">
       <button class="btn ghost sm" style="width:100%;justify-content:center" onclick="doLogout()">Odhlásit</button>
@@ -655,6 +655,87 @@ tbody tr:hover { background: var(--panel-2); }
         </div>
         <button class="btn" style="width:100%;justify-content:center" onclick="sellController()">✓ Prodán další kus</button>
         <div id="ctrl-log" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: HRY -->
+    <div class="wrap" id="page-hry" style="display:none">
+      <header>
+        <div>
+          <div class="page-title">Hry</div>
+          <div class="page-sub">Import z Aukra · evidence a prodej</div>
+        </div>
+      </header>
+
+      <!-- IMPORT -->
+      <div class="panel" style="margin-bottom:22px">
+        <h2>📋 Import inzerátů z Aukra</h2>
+        <div class="fgrp">
+          <label>Vlož řádky ve tvaru „Název, Cena" (jeden inzerát na řádek) — klidně i zkopírované z tabulky</label>
+          <textarea id="game-import" rows="5" placeholder="FIFA 23, 450&#10;God of War, 600&#10;Spider-Man, 350"></textarea>
+        </div>
+        <button class="btn" onclick="importGames()">+ Importovat inzeráty</button>
+        <div class="calc-note" id="game-import-note"></div>
+      </div>
+
+      <!-- ADD SINGLE -->
+      <div class="panel" style="margin-bottom:22px">
+        <h2>+ Přidat hru ručně</h2>
+        <div class="frow3">
+          <div class="fgrp">
+            <label>Název</label>
+            <input type="text" id="game-name" placeholder="např. FIFA 23">
+          </div>
+          <div class="fgrp">
+            <label>Nákupní cena (Kč)</label>
+            <input type="number" id="game-buy" min="0" placeholder="0">
+          </div>
+          <div class="fgrp">
+            <label>Cena inzerátu (Kč)</label>
+            <input type="number" id="game-price" min="0" placeholder="0">
+          </div>
+        </div>
+        <div class="frow">
+          <div class="fgrp">
+            <label>Platforma</label>
+            <select id="game-platform">
+              <option value="Aukro">Aukro (7 %)</option>
+              <option value="FB Marketplace">FB Marketplace</option>
+              <option value="FB Nikol">FB Nikol</option>
+              <option value="Bazoš">Bazoš</option>
+              <option value="Vinted">Vinted</option>
+              <option value="Jiné">Jiné</option>
+            </select>
+          </div>
+          <div class="fgrp">
+            <label>Stav</label>
+            <select id="game-status">
+              <option value="vystaveno">Vystaveno</option>
+              <option value="skladem">Skladem</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="addGame()">+ Přidat hru</button>
+      </div>
+
+      <!-- STATS -->
+      <div class="cards" id="game-cards" style="margin-bottom:22px"></div>
+
+      <!-- LIST -->
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hra</th>
+              <th>Nákup</th>
+              <th>Cena</th>
+              <th>Platforma</th>
+              <th>Stav</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="game-tbody"></tbody>
+        </table>
       </div>
     </div>
   </main>
@@ -890,6 +971,7 @@ var STOCK_WARN = 30; // dní
 var items = [];
 var lots = [];
 var controllers = { totalUnits: 200, totalCost: 35000, sales: [] };
+var games = [];
 var filterStatus = 'vse';
 var period = 'vse';
 var uid = null;
@@ -941,7 +1023,8 @@ function switchPage(page){
   if(nav) nav.classList.add('active');
   document.getElementById('page-telefony').style.display = page==='telefony' ? '' : 'none';
   document.getElementById('page-ovladace').style.display = page==='ovladace' ? '' : 'none';
-  document.getElementById('topbar-title').textContent = page==='telefony' ? '📱 Telefony' : '🎮 Ovladače';
+  document.getElementById('page-hry').style.display = page==='hry' ? '' : 'none';
+  document.getElementById('topbar-title').textContent = page==='telefony' ? '📱 Telefony' : (page==='ovladace' ? '🎮 Ovladače' : '🕹️ Hry');
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-backdrop').classList.remove('show');
 }
@@ -960,6 +1043,7 @@ function loadData(){
     items = (d && d.items) ? d.items : [];
     lots = (d && d.lots) ? d.lots : [];
     controllers = (d && d.controllers) ? d.controllers : { totalUnits: 200, totalCost: 35000, sales: [] };
+    games = (d && d.games) ? d.games : [];
     initYearSelect();
     render();
   }, function(e){
@@ -980,7 +1064,8 @@ function save(){
     var cleanItems = JSON.parse(JSON.stringify(items));
     var cleanLots = JSON.parse(JSON.stringify(lots));
     var cleanControllers = JSON.parse(JSON.stringify(controllers));
-    return docRef().set({ items: cleanItems, lots: cleanLots, controllers: cleanControllers }, { merge: true }).then(function(){
+    var cleanGames = JSON.parse(JSON.stringify(games));
+    return docRef().set({ items: cleanItems, lots: cleanLots, controllers: cleanControllers, games: cleanGames }, { merge: true }).then(function(){
       showSaveStatus('✓ Uloženo', 'var(--teal)', false);
     }).catch(function(e){
       console.error('save err', e);
@@ -1044,6 +1129,7 @@ function render(){
   renderRecap();
   renderAlerts();
   renderControllers();
+  renderGames();
   renderLots();
   renderDupes();
   renderTopFlop();
@@ -1096,6 +1182,97 @@ function sellController(){
 function removeControllerSale(id){
   controllers.sales = controllers.sales.filter(function(s){ return s.id!==id; });
   save(); renderControllers();
+}
+
+// ---------- Hry (import inzerátů + evidence) ----------
+function parseGameLine(line){
+  line = line.trim();
+  if(!line) return null;
+  var m = line.match(/^(.*?)[\t,;]\s*([\d\s.,]+)\s*(?:k[cč]|czk)?\.?$/i);
+  if(!m) return null;
+  var name = m[1].trim().replace(/[,;]+$/,'').trim();
+  var priceStr = m[2].replace(/[\s.]/g,'').replace(/,/g,'');
+  var price = parseInt(priceStr,10);
+  if(!name || isNaN(price)) return null;
+  return { name: name, price: price };
+}
+function importGames(){
+  var ta = document.getElementById('game-import');
+  var lines = ta.value.split('\n');
+  var added = 0, failed = 0;
+  lines.forEach(function(line){
+    var parsed = parseGameLine(line);
+    if(parsed){
+      games.push({
+        id: 'g_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+        name: parsed.name, buy: 0, price: parsed.price,
+        platform: 'Aukro', status: 'vystaveno',
+        listed: new Date().toISOString().slice(0,10), sold: ''
+      });
+      added++;
+    } else if(line.trim()) failed++;
+  });
+  ta.value='';
+  var note = document.getElementById('game-import-note');
+  note.textContent = added
+    ? ('✓ Naimportováno '+added+' inzerátů'+(failed?(' ('+failed+' řádků se nepodařilo rozpoznat)'):''))
+    : 'Nerozpoznal jsem žádný řádek. Použij formát „Název, Cena".';
+  if(added){ save(); renderGames(); }
+}
+function addGame(){
+  var name = document.getElementById('game-name').value.trim();
+  if(!name){ alert('Zadej název hry.'); return; }
+  var buy = +document.getElementById('game-buy').value || 0;
+  var price = +document.getElementById('game-price').value || 0;
+  var platform = document.getElementById('game-platform').value;
+  var status = document.getElementById('game-status').value;
+  games.push({
+    id: 'g_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    name: name, buy: buy, price: price, platform: platform, status: status,
+    listed: new Date().toISOString().slice(0,10), sold: ''
+  });
+  document.getElementById('game-name').value='';
+  document.getElementById('game-buy').value='';
+  document.getElementById('game-price').value='';
+  save(); renderGames();
+}
+function gameFee(g){ return Math.round((g.price||0)*(FEES[g.platform]||0)); }
+function gameProfit(g){ return g.status==='prodano' ? (g.price||0) - (g.buy||0) - gameFee(g) : null; }
+function markGameSold(id){
+  var g = games.find(function(x){ return x.id===id; });
+  if(!g) return;
+  g.status='prodano'; g.sold=new Date().toISOString().slice(0,10);
+  save(); renderGames();
+}
+function deleteGame(id){
+  if(!confirm('Smazat tuto hru?')) return;
+  games = games.filter(function(g){ return g.id!==id; });
+  save(); renderGames();
+}
+function renderGames(){
+  var tbody = document.getElementById('game-tbody');
+  if(!tbody) return;
+  var sold = games.filter(function(g){ return g.status==='prodano'; });
+  var totalProfit = sold.reduce(function(s,g){ return s+(gameProfit(g)||0); },0);
+  var open = games.filter(function(g){ return g.status!=='prodano'; });
+  document.getElementById('game-cards').innerHTML =
+    card('Čistý zisk', fmt(totalProfit), 'teal', sold.length+' prodaných', '💰') +
+    card('Vystaveno / skladem', open.length, 'amber', 'čeká na prodej', '🕹️') +
+    card('Celkem her', games.length, '', '', '📋');
+  tbody.innerHTML = games.length ? games.slice().reverse().map(function(g){
+    var profit = gameProfit(g);
+    return '<tr>'+
+      '<td class="tname">'+esc(g.name)+'</td>'+
+      '<td>'+fmt(g.buy)+'</td>'+
+      '<td>'+fmt(g.price)+(profit!==null?'<div style="font-size:11px" class="'+(profit>=0?'profit-pos':'profit-neg')+'">zisk '+fmt(profit)+'</div>':'')+'</td>'+
+      '<td><span class="listed-tag">'+esc(g.platform)+'</span></td>'+
+      '<td><span class="badge '+g.status+'">'+(g.status==='prodano'?'Prodáno':(g.status==='vystaveno'?'Vystaveno':'Skladem'))+'</span></td>'+
+      '<td class="row-act">'+
+        (g.status!=='prodano' ? '<button class="icon-btn" title="Označit jako prodáno" onclick="markGameSold(\''+g.id+'\')">✓</button>' : '') +
+        '<button class="icon-btn del" title="Smazat" onclick="deleteGame(\''+g.id+'\')">✕</button>'+
+      '</td>'+
+    '</tr>';
+  }).join('') : '<tr><td colspan="6" class="empty">Zatím žádné hry. Importuj inzeráty z Aukra nebo přidej ručně.</td></tr>';
 }
 function soldInPeriod(){
   return items.filter(function(i){ return i.status==='prodano' && profit(i)!==null && inPeriod(i.sold); });

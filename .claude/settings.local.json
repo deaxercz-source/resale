@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m *)",
+      "Bash(git push *)",
+      "Bash(git push)",
+      "Bash(ls -la ~/.claude/projects/ 2>/dev/null | head -50)",
+      "Bash(python3 -)",
+      "Bash(rm -f ~/.claude/projects/C--Users-Kokot-Documents-GitHub-resale/bash_cmds.txt)"
+    ]
+  }
+}

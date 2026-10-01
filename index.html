@@ -982,6 +982,67 @@ tbody tr:hover { background: var(--panel-2); }
   </div>
 </div>
 
+<!-- GAME EDIT MODAL -->
+<div class="modal-bg" id="game-bg">
+  <div class="modal">
+    <h3>Upravit hru</h3>
+    <input type="hidden" id="gm-id">
+    <div class="frow">
+      <div class="fgrp">
+        <label>Název</label>
+        <input type="text" id="gm-name">
+      </div>
+      <div class="fgrp">
+        <label>Konzole</label>
+        <select id="gm-console">
+          <option value="PlayStation 2">PlayStation 2</option>
+          <option value="PlayStation 3">PlayStation 3</option>
+          <option value="PlayStation 4">PlayStation 4</option>
+          <option value="Xbox 360">Xbox 360</option>
+          <option value="Xbox One">Xbox One</option>
+          <option value="Xbox Series">Xbox Series</option>
+          <option value="Jiné">Jiné</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Nákupní cena (Kč)</label>
+        <input type="number" id="gm-buy" min="0">
+      </div>
+      <div class="fgrp">
+        <label>Cena inzerátu / prodejní cena (Kč)</label>
+        <input type="number" id="gm-price" min="0">
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Platforma</label>
+        <select id="gm-platform">
+          <option value="Aukro">Aukro (7 %)</option>
+          <option value="FB Marketplace">FB Marketplace</option>
+          <option value="FB Nikol">FB Nikol</option>
+          <option value="Bazoš">Bazoš</option>
+          <option value="Vinted">Vinted</option>
+          <option value="Jiné">Jiné</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label>Stav</label>
+        <select id="gm-status">
+          <option value="skladem">Skladem</option>
+          <option value="vystaveno">Vystaveno</option>
+          <option value="prodano">Prodáno</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeGameModal()">Zrušit</button>
+      <button class="btn" onclick="saveGameEdit()">Uložit</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ---------- Firebase ----------
 // stejný Firebase projekt (stanek-kalendar) jako ostatní appky, ale samostatná kolekce
@@ -1290,6 +1351,37 @@ function deleteGame(id){
   games = games.filter(function(g){ return g.id!==id; });
   save(); renderGames();
 }
+function editGame(id){
+  var g = games.find(function(x){ return x.id===id; });
+  if(!g) return;
+  document.getElementById('gm-id').value = g.id;
+  document.getElementById('gm-name').value = g.name||'';
+  document.getElementById('gm-console').value = g.console||'PlayStation 4';
+  document.getElementById('gm-buy').value = g.buy||0;
+  document.getElementById('gm-price').value = g.price||0;
+  document.getElementById('gm-platform').value = g.platform||'Aukro';
+  document.getElementById('gm-status').value = g.status||'skladem';
+  document.getElementById('game-bg').classList.add('show');
+}
+function closeGameModal(){ document.getElementById('game-bg').classList.remove('show'); }
+function saveGameEdit(){
+  var id = document.getElementById('gm-id').value;
+  var g = games.find(function(x){ return x.id===id; });
+  if(!g) return;
+  var name = document.getElementById('gm-name').value.trim();
+  if(!name){ alert('Zadej název hry.'); return; }
+  var newStatus = document.getElementById('gm-status').value;
+  g.name = name;
+  g.console = document.getElementById('gm-console').value;
+  g.buy = +document.getElementById('gm-buy').value || 0;
+  g.price = +document.getElementById('gm-price').value || 0;
+  g.platform = document.getElementById('gm-platform').value;
+  if(newStatus==='prodano' && g.status!=='prodano') g.sold = new Date().toISOString().slice(0,10);
+  if(newStatus!=='prodano') g.sold = '';
+  g.status = newStatus;
+  closeGameModal();
+  save(); renderGames();
+}
 function renderGames(){
   var tbody = document.getElementById('game-tbody');
   if(!tbody) return;
@@ -1311,6 +1403,7 @@ function renderGames(){
       '<td><span class="badge '+g.status+'">'+(g.status==='prodano'?'Prodáno':(g.status==='vystaveno'?'Vystaveno':'Skladem'))+'</span></td>'+
       '<td class="row-act">'+
         (g.status!=='prodano' ? '<button class="icon-btn" title="Označit jako prodáno" onclick="markGameSold(\''+g.id+'\')">✓</button>' : '') +
+        '<button class="icon-btn" title="Upravit" onclick="editGame(\''+g.id+'\')">✎</button>'+
         '<button class="icon-btn del" title="Smazat" onclick="deleteGame(\''+g.id+'\')">✕</button>'+
       '</td>'+
     '</tr>';
